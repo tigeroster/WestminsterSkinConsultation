@@ -38,7 +38,7 @@ public class AddConsultations extends JFrame {
             "2019", "2020", "2021", "2022" };
 
     private final String[] consultYears = {
-            "2022", "2023", "2025", "2025"
+            "2023", "2024", "2025"
     };
     public static SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MMM/yyyy");
     public AddConsultations(){
