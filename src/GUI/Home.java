@@ -1,5 +1,8 @@
 package GUI;
 
+import Console.Availability;
+import Console.Consultations;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
@@ -28,7 +31,12 @@ public class Home extends JFrame{
             addConsultations.setFocusPainted(false);
             addConsultations.addActionListener(e -> {
                 if(e.getSource() == addConsultations){
-                    new CheckDoctorAvailability();
+                    AddConsultations.loadAvailableConsultations();
+                    for(Availability av : Consultations.availabilities){
+                        System.out.println("Doctor Name :" + av.getDoctorName());
+                        System.out.println("Date        :" + av.getConsultationDate());
+                    }
+                    new AddConsultations();
                 }
             });
             leftPanelLabel.setIcon(homeImage);

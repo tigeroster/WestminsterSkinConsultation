@@ -16,14 +16,12 @@ public class Doctor extends Person{
         this.medicalLicenseNo = medicalLicenseNo;
         this.specialization = specialization;
     }
-
     public Doctor(String name, String surname, Date dateOfBirth, String mobileNumber, String medicalLicenseNo,
                   String specialization,String gender) {
         super(name, surname, dateOfBirth, mobileNumber,gender);
         this.medicalLicenseNo = medicalLicenseNo;
         this.specialization = specialization;
     }
-
     public String getMedicalLicenseNo() {
         return medicalLicenseNo;
     }
@@ -36,5 +34,4 @@ public class Doctor extends Person{
     public void setSpecialization(String specialization) {
         this.specialization = specialization;
     }
-
 }

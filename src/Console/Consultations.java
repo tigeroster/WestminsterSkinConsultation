@@ -1,21 +1,22 @@
 package Console;
 
-import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Consultations {
     private int consultationId;
-    private Date consultatoionDate;
     private Patient patient;
-    private Doctor doctor;
+    private String doctor;
     private String notes;
+    public static ArrayList<Consultations> consultations = new ArrayList<>();
+    public static ArrayList<Availability> availabilities = new ArrayList<>();
 
-    public Consultations(){}
+    public Consultations() {
+    }
 
-    public Consultations(int consultationId, Date consultatoionDate, Patient patient,
-                         Doctor doctor, String notes) {
+    public Consultations(int consultationId, Patient patient,
+                         String doctor, String notes) {
         this.consultationId = consultationId;
-        this.consultatoionDate = consultatoionDate;
         this.patient = patient;
         this.notes = notes;
         this.doctor = doctor;
@@ -29,14 +30,6 @@ public class Consultations {
         this.consultationId = consultationId;
     }
 
-    public Date getConsultatoionDate() {
-        return consultatoionDate;
-    }
-
-    public void setConsultatoionDate(Date consultatoionDate) {
-        this.consultatoionDate = consultatoionDate;
-    }
-
     public Patient getPatient() {
         return patient;
     }
@@ -45,11 +38,11 @@ public class Consultations {
         this.patient = patient;
     }
 
-    public Doctor getDoctor() {
+    public String getDoctor() {
         return doctor;
     }
 
-    public void setDoctor(Doctor doctor) {
+    public void setDoctor(String doctor) {
         this.doctor = doctor;
     }
 
@@ -59,5 +52,26 @@ public class Consultations {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public static boolean checkAvailability(ArrayList<Availability> availabilities, String doctorName, Date date) {
+        boolean state = false;
+        if (availabilities.size() != 0) {
+            for (Availability available : availabilities) {
+                if (available.getDoctorName().equals(doctorName)) {
+                    if (available.getConsultationDate().equals(date)) {
+                        state = false;
+                        break;
+                    } else {
+                        state = true;
+                    }
+                } else {
+                    state = true;
+                }
+            }
+        } else {
+            state = true;
+        }
+        return state;
     }
 }

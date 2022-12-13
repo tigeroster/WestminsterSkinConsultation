@@ -1,16 +1,21 @@
 package GUI;
 
-import Console.Doctor;
+import Console.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
 
 import static Console.Doctor.doctors;
 
 public class AddConsultations extends JFrame {
-    DefaultTableModel table = new DefaultTableModel();
-    JComboBox<String> comboBox = new JComboBox<>();
+    JComboBox<Object> comboBox = new JComboBox<>();
     private final String[] dates
             = { "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "10",
@@ -35,6 +40,7 @@ public class AddConsultations extends JFrame {
     private final String[] consultYears = {
             "2022", "2023", "2025", "2025"
     };
+    public static SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MMM/yyyy");
     public AddConsultations(){
         Container c = getContentPane();
         c.setLayout(null);
@@ -133,19 +139,160 @@ public class AddConsultations extends JFrame {
         JLabel notes = new JLabel("Additional Notes");
         notes.setFont(new Font("Arial", Font.PLAIN, 16));
         notes.setSize(200, 20);
-        notes.setLocation(600, 110);
+        notes.setLocation(600, 250);
         c.add(notes);
 
         JTextArea jNotes = new JTextArea();
         jNotes.setFont(new Font("Arial", Font.PLAIN, 15));
         jNotes.setSize(250, 100);
-        jNotes.setLocation(750, 100);
+        jNotes.setLocation(750, 250);
         c.add(jNotes);
 
+        // Doctor's List
+        JLabel doctorNames = new JLabel("Doctor's Name");
+        doctorNames.setFont(new Font("Arial", Font.PLAIN, 16));
+        doctorNames.setSize(200, 20);
+        doctorNames.setLocation(600, 110);
+        c.add(doctorNames);
+
+        DefaultComboBoxModel<Object> comboBoxModel = new DefaultComboBoxModel<>();
+        for (Doctor doctor : doctors) {
+            comboBoxModel.addElement(doctor.getName() + " " + doctor.getSurname());
+        }
+        comboBox.setModel(comboBoxModel);
+        comboBox.setSize(250, 30);
+        comboBox.setLocation(750, 110);
+        comboBox.addActionListener(e -> {
+            System.out.println("Works");
+        });
+        comboBox.setRenderer(new DefaultListCellRenderer());
+        c.add(comboBox);
+
+        // Consultation Date
+        JLabel consultDate = new JLabel("Booking Date");
+        consultDate.setFont(new Font("Arial", Font.PLAIN, 16));
+        consultDate.setSize(200, 20);
+        consultDate.setLocation(600, 150);
+        c.add(consultDate);
+
+        JComboBox<String> consultDateBox = new JComboBox<>(dates);
+        consultDateBox.setFont(new Font("Arial", Font.PLAIN, 15));
+        consultDateBox.setSize(60, 20);
+        consultDateBox.setLocation(750, 150);
+        c.add(consultDateBox);
+
+        JComboBox<String> consultMonth = new JComboBox<>(months);
+        consultMonth.setFont(new Font("Arial", Font.PLAIN, 15));
+        consultMonth.setSize(80, 20);
+        consultMonth.setLocation(820, 150);
+        c.add(consultMonth);
+
+        JComboBox<String> consultYear = new JComboBox<>(consultYears);
+        consultYear.setFont(new Font("Arial", Font.PLAIN, 15));
+        consultYear.setSize(100, 20);
+        consultYear.setLocation(900, 150);
+        c.add(consultYear);
+
+        // Book a consultation button
+        JButton book = new JButton("Book");
+        book.setFocusPainted(false);
+        book.setSize(100,30);
+        book.setLocation(600,300);
+        try{
+            book.addActionListener(e -> {
+                String doctorName = (String) comboBox.getSelectedItem();
+                String dateBox = (String) consultDateBox.getSelectedItem();
+                String monthBox = (String) consultMonth.getSelectedItem();
+                String yearBox = (String) consultYear.getSelectedItem();
+                String pDateBox = (String) date.getSelectedItem();
+                String pMonthBox = (String) month.getSelectedItem();
+                String pYearBox = (String) year.getSelectedItem();
+                String dateOfBirth = pDateBox +"/" + pMonthBox + "/" + pYearBox;
+                String dateFormat = dateBox +"/" + monthBox + "/" + yearBox;
+                Date formatBox;
+                Date dobBox;
+                try {
+                    dobBox = dateFormatter.parse(dateOfBirth);
+                } catch (ParseException ex) {
+                    throw new RuntimeException(ex);
+                }
+                try {
+                    formatBox = dateFormatter.parse(dateFormat);
+                } catch (ParseException ex) {
+                    throw new RuntimeException(ex);
+                }
+                if(Consultations.checkAvailability(Consultations.availabilities, doctorName, formatBox)){
+                    String id = Helper.idGenerator(5);
+                    String genderSelected = getSelectedButtonText(gen);
+                    Patient patient = new Patient(tFirstname.getText(), tSurname.getText(), dobBox,
+                            tMobile.getText(), genderSelected, id);
+                    Patient.patients.add(patient);
+                    Consultations.availabilities.add(new Availability(doctorName,formatBox));
+                    saveAvailableConsultations();
+                    Consultations.consultations.add(new Consultations());
+                    JOptionPane.showMessageDialog(this,"Consultation Added Successfully");
+                    tFirstname.setText("");
+                    tSurname.setText("");
+                    jNotes.setText("");
+                    tMobile.setText("");
+                }else{
+                    System.out.println("Something else...");
+                }
+            });
+        }catch(RuntimeException runtimeException){
+            runtimeException.printStackTrace();
+        }
+        c.add(book);
         setTitle("Add a Consultation");
         setSize(1200, 600);
         setVisible(true);
         setResizable(false);
     }
 
+    public String getSelectedButtonText(ButtonGroup buttonGroup) {
+        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+            if (button.isSelected()) {
+                return button.getText();
+            }
+        }
+        return null;
+    }
+
+    public static void saveAvailableConsultations(){
+        try {
+            File file = new File("availableConsultations.txt");
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            try {
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+                for (Availability available : Consultations.availabilities) {
+                    objectOutputStream.writeObject(available);
+                }
+                objectOutputStream.close();
+                fileOutputStream.close();
+                System.out.println("Saved Successfully!");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
+    }
+
+    public static void loadAvailableConsultations() {
+        try{
+            FileInputStream fileInputStream = new FileInputStream("availableConsultations.txt");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            while(true){
+                try{
+                    Availability available = (Availability) objectInputStream.readObject();
+                    Consultations.availabilities.add(available);
+                }catch(Exception e){
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
