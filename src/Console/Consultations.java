@@ -1,10 +1,11 @@
 package Console;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Consultations {
-    private int consultationId;
+public class Consultations implements Serializable {
+    private String consultationId;
     private Patient patient;
     private String doctor;
     private String notes;
@@ -14,7 +15,7 @@ public class Consultations {
     public Consultations() {
     }
 
-    public Consultations(int consultationId, Patient patient,
+    public Consultations(String consultationId, Patient patient,
                          String doctor, String notes) {
         this.consultationId = consultationId;
         this.patient = patient;
@@ -22,11 +23,11 @@ public class Consultations {
         this.doctor = doctor;
     }
 
-    public int getConsultationId() {
+    public String getConsultationId() {
         return consultationId;
     }
 
-    public void setConsultationId(int consultationId) {
+    public void setConsultationId(String consultationId) {
         this.consultationId = consultationId;
     }
 

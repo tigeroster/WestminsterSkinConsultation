@@ -3,12 +3,10 @@ package GUI;
 import Console.*;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 
@@ -50,6 +48,20 @@ public class AddConsultations extends JFrame {
         title.setSize(300,30);
         title.setLocation(450,30);
         c.add(title);
+
+        // View Consultations
+        JButton viewConsultations = new JButton("All Consultations");
+        viewConsultations.setFocusPainted(false);
+        viewConsultations.setSize(170,30);
+        viewConsultations.setLocation(1000,30);
+        try{
+            viewConsultations.addActionListener(e -> {
+                new ViewConsultations();
+            });
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        c.add(viewConsultations);
 
         // First Name
         JLabel firstname = new JLabel("First Name");
@@ -160,7 +172,7 @@ public class AddConsultations extends JFrame {
             comboBoxModel.addElement(doctor.getName() + " " + doctor.getSurname());
         }
         comboBox.setModel(comboBoxModel);
-        comboBox.setSize(250, 30);
+        comboBox.setSize(400, 30);
         comboBox.setLocation(750, 110);
         comboBox.addActionListener(e -> {
             System.out.println("Works");
@@ -223,13 +235,23 @@ public class AddConsultations extends JFrame {
                 }
                 if(Consultations.checkAvailability(Consultations.availabilities, doctorName, formatBox)){
                     String id = Helper.idGenerator(5);
+                    String consultationId = Helper.idGenerator(8);
                     String genderSelected = getSelectedButtonText(gen);
                     Patient patient = new Patient(tFirstname.getText(), tSurname.getText(), dobBox,
                             tMobile.getText(), genderSelected, id);
                     Patient.patients.add(patient);
                     Consultations.availabilities.add(new Availability(doctorName,formatBox));
                     saveAvailableConsultations();
-                    Consultations.consultations.add(new Consultations());
+
+                    Consultations.consultations.add(new Consultations(consultationId, patient, doctorName,
+                            jNotes.getText()));
+                    saveConsultations();
+                    for(Consultations con : Consultations.consultations){
+                        System.out.println("Consultation ID: " + con.getConsultationId());
+                        System.out.println("Patient Name: " + con.getPatient().getName() + con.getPatient().getSurname());
+                        System.out.println("Patient ID: " + con.getPatient().getId());
+                        System.out.println("Doctor Assigned: " + con.getDoctor());
+                    }
                     JOptionPane.showMessageDialog(this,"Consultation Added Successfully");
                     tFirstname.setText("");
                     tSurname.setText("");
@@ -293,6 +315,43 @@ public class AddConsultations extends JFrame {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static void loadConsultations() {
+        try{
+            FileInputStream fileInputStream = new FileInputStream("Consultations.txt");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            while(true){
+                try{
+                    Consultations available = (Consultations) objectInputStream.readObject();
+                    Consultations.consultations.add(available);
+                }catch(Exception e){
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void saveConsultations(){
+        try {
+            File file = new File("Consultations.txt");
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            try {
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+                for (Consultations available : Consultations.consultations) {
+                    objectOutputStream.writeObject(available);
+                }
+                objectOutputStream.close();
+                fileOutputStream.close();
+                System.out.println("Saved Successfully!");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }catch(IOException ex){
+            ex.printStackTrace();
         }
     }
 }
