@@ -14,6 +14,7 @@ import static Console.Doctor.doctors;
 
 public class AddConsultations extends JFrame {
     JComboBox<Object> comboBox = new JComboBox<>();
+    JComboBox<Object> comboBoxS = new JComboBox<>();
     private final String[] dates
             = { "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "10",
@@ -160,23 +161,44 @@ public class AddConsultations extends JFrame {
         jNotes.setLocation(750, 250);
         c.add(jNotes);
 
+        // Doctor Specialization
+        JLabel doctorSpecialization = new JLabel("Specialization");
+        doctorSpecialization.setFont(new Font("Arial", Font.PLAIN, 16));
+        doctorSpecialization.setSize(140, 20);
+        doctorSpecialization.setLocation(600, 110);
+        c.add(doctorSpecialization);
+
+        DefaultComboBoxModel<Object> comboBoxModelS = new DefaultComboBoxModel<>();
+        comboBoxModelS.addElement("");
+        for (String spec : Doctor.specializationNames) {
+            comboBoxModelS.addElement(spec);
+        }
+        comboBoxS.setModel(comboBoxModelS);
+        comboBoxS.setSize(400, 30);
+        comboBoxS.setLocation(750, 110);
+        comboBoxS.setRenderer(new DefaultListCellRenderer());
+        c.add(comboBoxS);
+
         // Doctor's List
         JLabel doctorNames = new JLabel("Doctor's Name");
         doctorNames.setFont(new Font("Arial", Font.PLAIN, 16));
-        doctorNames.setSize(200, 20);
-        doctorNames.setLocation(600, 110);
+        doctorNames.setSize(130, 20);
+        doctorNames.setLocation(600, 150);
         c.add(doctorNames);
 
         DefaultComboBoxModel<Object> comboBoxModel = new DefaultComboBoxModel<>();
-        for (Doctor doctor : doctors) {
-            comboBoxModel.addElement(doctor.getName() + " " + doctor.getSurname());
-        }
+        comboBoxS.addActionListener(e ->{
+            comboBox.removeAllItems();
+            for (Doctor doctor : doctors) {
+                if(doctor.getSpecialization().equals(comboBoxS.getSelectedItem())){
+                    comboBoxModel.addElement(doctor.getName() + " " + doctor.getSurname());
+                }
+            }
+        });
+
         comboBox.setModel(comboBoxModel);
         comboBox.setSize(400, 30);
-        comboBox.setLocation(750, 110);
-        comboBox.addActionListener(e -> {
-            System.out.println("Works");
-        });
+        comboBox.setLocation(750, 150);
         comboBox.setRenderer(new DefaultListCellRenderer());
         c.add(comboBox);
 
@@ -184,25 +206,25 @@ public class AddConsultations extends JFrame {
         JLabel consultDate = new JLabel("Booking Date");
         consultDate.setFont(new Font("Arial", Font.PLAIN, 16));
         consultDate.setSize(200, 20);
-        consultDate.setLocation(600, 150);
+        consultDate.setLocation(600, 200);
         c.add(consultDate);
 
         JComboBox<String> consultDateBox = new JComboBox<>(dates);
         consultDateBox.setFont(new Font("Arial", Font.PLAIN, 15));
         consultDateBox.setSize(60, 20);
-        consultDateBox.setLocation(750, 150);
+        consultDateBox.setLocation(750, 200);
         c.add(consultDateBox);
 
         JComboBox<String> consultMonth = new JComboBox<>(months);
         consultMonth.setFont(new Font("Arial", Font.PLAIN, 15));
         consultMonth.setSize(80, 20);
-        consultMonth.setLocation(820, 150);
+        consultMonth.setLocation(820, 200);
         c.add(consultMonth);
 
         JComboBox<String> consultYear = new JComboBox<>(consultYears);
         consultYear.setFont(new Font("Arial", Font.PLAIN, 15));
         consultYear.setSize(100, 20);
-        consultYear.setLocation(900, 150);
+        consultYear.setLocation(900, 200);
         c.add(consultYear);
 
         // Book a consultation button
@@ -212,6 +234,7 @@ public class AddConsultations extends JFrame {
         book.setLocation(600,300);
         try{
             book.addActionListener(e -> {
+                String patientName = tFirstname.getText() + " " + tSurname.getText();
                 String doctorName = (String) comboBox.getSelectedItem();
                 String dateBox = (String) consultDateBox.getSelectedItem();
                 String monthBox = (String) consultMonth.getSelectedItem();
@@ -242,23 +265,23 @@ public class AddConsultations extends JFrame {
                     Patient.patients.add(patient);
                     Consultations.availabilities.add(new Availability(doctorName,formatBox));
                     saveAvailableConsultations();
-
                     Consultations.consultations.add(new Consultations(consultationId, patient, doctorName,
-                            jNotes.getText()));
+                            jNotes.getText(), pastConsultations(patientName), formatBox));
                     saveConsultations();
+                    JOptionPane.showMessageDialog(this,"Consultation Added Successfully!");
                     for(Consultations con : Consultations.consultations){
                         System.out.println("Consultation ID: " + con.getConsultationId());
                         System.out.println("Patient Name: " + con.getPatient().getName() + con.getPatient().getSurname());
                         System.out.println("Patient ID: " + con.getPatient().getId());
                         System.out.println("Doctor Assigned: " + con.getDoctor());
+                        System.out.println("Consultation Cost: " + "$" + con.getCost());
                     }
-                    JOptionPane.showMessageDialog(this,"Consultation Added Successfully");
                     tFirstname.setText("");
                     tSurname.setText("");
                     jNotes.setText("");
                     tMobile.setText("");
                 }else{
-                    System.out.println("Something else...");
+                    JOptionPane.showMessageDialog(this,"Doctor already occupied\nOn call doctor assigned");
                 }
             });
         }catch(RuntimeException runtimeException){
@@ -353,5 +376,23 @@ public class AddConsultations extends JFrame {
         }catch(IOException ex){
             ex.printStackTrace();
         }
+    }
+
+    public double pastConsultations(String pName){
+        double cost = 0;
+        if(Consultations.consultations.size() != 0){
+            for(Consultations con : Consultations.consultations){
+                String name = con.getPatient().getName() + " " + con.getPatient().getSurname();
+                if(name.equals(pName)){
+                    cost = 25;
+                    break;
+                }else{
+                    cost = 15;
+                }
+            }
+        }else{
+            cost = 15;
+        }
+        return cost;
     }
 }

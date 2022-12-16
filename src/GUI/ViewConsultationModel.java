@@ -9,7 +9,7 @@ import java.util.Date;
 public class ViewConsultationModel extends AbstractTableModel {
     private final String[] headers = {"Patient ID", "Patient Name", "Date of Birth", "Mobile Number", "Gender",
             "Consultation ID",
-            "Doctor Appointed" };
+            "Doctor Appointed" , "Consultation Cost", "Date"};
     public static ArrayList<Consultations> consultations;
 
     public ViewConsultationModel() {
@@ -46,6 +46,10 @@ public class ViewConsultationModel extends AbstractTableModel {
             temp = consultations.get(rowIndex).getConsultationId();
         }else if(columnIndex == 6){
             temp = consultations.get(rowIndex).getDoctor();
+        }else if(columnIndex == 7){
+            temp = consultations.get(rowIndex).getCost();
+        }else if(columnIndex == 8){
+            temp = String.format("%1$tb %1$te, %1$tY", consultations.get(rowIndex).getConsultationDate());
         }
         return temp;
     }
@@ -67,6 +71,10 @@ public class ViewConsultationModel extends AbstractTableModel {
         }else if(col == 5){
             return String.class;
         }else if(col == 6){
+            return String.class;
+        }else if(col == 7){
+            return String.class;
+        }else if(col == 8){
             return String.class;
         }
         else {

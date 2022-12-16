@@ -9,6 +9,8 @@ public class Consultations implements Serializable {
     private Patient patient;
     private String doctor;
     private String notes;
+    private double cost;
+    private Date consultationDate;
     public static ArrayList<Consultations> consultations = new ArrayList<>();
     public static ArrayList<Availability> availabilities = new ArrayList<>();
 
@@ -16,11 +18,29 @@ public class Consultations implements Serializable {
     }
 
     public Consultations(String consultationId, Patient patient,
-                         String doctor, String notes) {
+                         String doctor, String notes, double cost, Date consultationDate) {
         this.consultationId = consultationId;
         this.patient = patient;
         this.notes = notes;
         this.doctor = doctor;
+        this.cost = cost;
+        this.consultationDate = consultationDate;
+    }
+
+    public Date getConsultationDate() {
+        return consultationDate;
+    }
+
+    public void setConsultationDate(Date consultationDate) {
+        this.consultationDate = consultationDate;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
     }
 
     public String getConsultationId() {

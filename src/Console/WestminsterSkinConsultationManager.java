@@ -27,8 +27,7 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
             System.out.println("Enter the Doctor's Gender: ");
             String gender = sc.nextLine();
 
-            System.out.println("Enter the doctor's Medical License Number: ");
-            String medicalNumber = sc.nextLine();
+            String medicalNumber = Helper.idGenerator(6);
             System.out.println("List of Specializations\n");
             for(int i = 0; i< Doctor.specializationNames.length; i++){
                 System.out.println(i + 1 + " - " + Doctor.specializationNames[i]);
@@ -36,43 +35,31 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
             boolean loop = true;
             while(loop){
                 try{
-                    System.out.println("\nEnter the Console.Doctor's Specialization ID: ");
+                    System.out.println("\nEnter the Doctor's Specialization ID: ");
                     int specializationId = sc.nextInt();
 
                     switch (specializationId){
                         case 1 -> {
-                            specialization = "Anesthesiology";
-                            loop =false;
-                        }
-                        case 2 -> {
                             specialization = "Dermatology";
                             loop = false;
                         }
-                        case 3 -> {
+                        case 2 -> {
                             specialization = "Internal medicine";
                             loop = false;
                         }
-                        case 4 -> {
-                            specialization = "Family medicine";
-                            loop = false;
-                        }
-                        case 5 -> {
+                        case 3 -> {
                             specialization = "Neurology";
                             loop = false;
                         }
-                        case 6 -> {
-                            specialization = "Ophthalmology";
-                            loop = false;
-                        }
-                        case 7 -> {
+                        case 4 -> {
                             specialization = "Psychiatry";
                             loop = false;
                         }
-                        case 8 -> {
+                        case 5 -> {
                             specialization = "Surgery";
                             loop = false;
                         }
-                        case 9 -> {
+                        case 6 -> {
                             specialization = "General Practitioner";
                             loop = false;
                         }
@@ -87,7 +74,7 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
             }
             Doctor doctor = new Doctor(firstName, surname, dob, mobile, medicalNumber, specialization, gender);
             doctors.add(doctor);
-            System.out.println("Console.Doctor " + doctor.getName() + " " + doctor.getSurname() + " is added successfully!\n");
+            System.out.println("Doctor " + doctor.getName() + " " + doctor.getSurname() + " is added successfully!\n");
         }catch (ParseException parseException){
             System.out.println("Something is wrong. Please check the inputs you entered");
         }catch(ArrayIndexOutOfBoundsException outOfBoundsException){
@@ -104,11 +91,11 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
                 System.out.println("======================================");
                 System.out.println("======================================");
                 System.out.println("Medical License Number: " + doctor.getMedicalLicenseNo());
-                System.out.println("Console.Doctor's Name: " + doctor.getName() + " " + doctor.getSurname());
+                System.out.println("Doctor's Name: " + doctor.getName() + " " + doctor.getSurname());
                 System.out.println("Date Of Birth: " + String.format("%1$tb %1$te, %1$tY", doctor.getDateOfBirth()));
                 System.out.println("Gender: " +doctor.getGender());
-                System.out.println("Console.Doctor's Specialization: " + doctor.getSpecialization());
-                System.out.println("Console.Doctor's Mobile Number: " + doctor.getMobileNumber());
+                System.out.println("Doctor's Specialization: " + doctor.getSpecialization());
+                System.out.println("Doctor's Mobile Number: " + doctor.getMobileNumber());
                 System.out.println("=======================================");
                 System.out.println("=======================================");
             }
@@ -128,7 +115,7 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
             {
                 if(number.equals(doctors.get(i).getMedicalLicenseNo())){
                     doctors.remove(doctors.get(i));
-                    System.out.println("Console.Doctor deleted successfully!\n");
+                    System.out.println("Doctor deleted successfully!\n");
                     break;
                 }else{
                     System.out.println("No doctor to be found!\n");
@@ -183,22 +170,22 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
         Scanner sc = new Scanner(System.in);
         for(Doctor doctor:  doctors){
             System.out.println("Medical License Number: " + doctor.getMedicalLicenseNo());
-            System.out.println("Console.Doctor's Name: " + doctor.getName());
+            System.out.println("Doctor's Name: " + doctor.getName());
             System.out.println("=======================================");
         }
         try{
-            System.out.println("Enter the Console.Doctor's Medical License Number: ");
+            System.out.println("Enter the Doctor's Medical License Number: ");
             String number = sc.nextLine();
             for(Doctor doctor: doctors){
                 if(number.equals(doctor.getMedicalLicenseNo())){
                     System.out.println("======================================");
                     System.out.println("======================================");
                     System.out.println("Medical License Number: " + doctor.getMedicalLicenseNo());
-                    System.out.println("Console.Doctor's Name: " + doctor.getName() + " " + doctor.getSurname());
+                    System.out.println("Doctor's Name: " + doctor.getName() + " " + doctor.getSurname());
                     System.out.println("Date Of Birth: " + String.format("%1$tb %1$te, %1$tY", doctor.getDateOfBirth()));
-                    System.out.println("Gendr: " + doctor.getGender());
-                    System.out.println("Console.Doctor's Specialization: " + doctor.getSpecialization());
-                    System.out.println("Console.Doctor's Mobile Number: " + doctor.getMobileNumber());
+                    System.out.println("Gender: " + doctor.getGender());
+                    System.out.println("Doctor's Specialization: " + doctor.getSpecialization());
+                    System.out.println("Doctor's Mobile Number: " + doctor.getMobileNumber());
                     System.out.println("=======================================");
                     System.out.println("=======================================");
                 }else{

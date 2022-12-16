@@ -6,9 +6,9 @@ import java.util.Date;
 public class Doctor extends Person{
     private String medicalLicenseNo;
     private String specialization;
-    public static final String[] specializationNames = new String[]{"Anesthesiology", "Dermatology", "Internal " +
+    public static final String[] specializationNames = new String[]{"Dermatology", "Internal " +
             "medicine",
-            "Family medicine", "Neurology", "Ophthalmology", "Psychiatry", "Surgery", "General Practitioner"};
+            "Neurology", "Psychiatry", "Surgery", "General Practitioner"};
     public static final ArrayList<Doctor> doctors = new ArrayList<>(10);
 
     public Doctor(){}

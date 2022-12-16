@@ -32,6 +32,7 @@ public class Main{
                 }
             };
             timer.schedule(task, 1500);
+
         }else if(mainOpt == 3){
             System.exit(0);
         }else{
