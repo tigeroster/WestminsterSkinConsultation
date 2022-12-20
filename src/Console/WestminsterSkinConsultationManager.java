@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class WestminsterSkinConsultationManager implements SkinConsultationManager{
-    public String specialization = null;
+    public String specialization = "";
     @Override
     public void addDoctor(ArrayList<Doctor> doctors) {
         Scanner sc = new Scanner(System.in);

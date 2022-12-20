@@ -15,6 +15,7 @@ import static Console.Doctor.doctors;
 public class AddConsultations extends JFrame {
     JComboBox<Object> comboBox = new JComboBox<>();
     JComboBox<Object> comboBoxS = new JComboBox<>();
+
     private final String[] dates
             = { "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "10",
@@ -35,6 +36,10 @@ public class AddConsultations extends JFrame {
             "2011", "2012", "2013", "2014",
             "2015", "2016", "2017", "2018",
             "2019", "2020", "2021", "2022" };
+
+    private final String[] time = {
+            "09:00", "10:00", "11:00", "12:00", "01:00", "02:00", "03:00", "04:00", "05:00","06:00"
+    };
 
     private final String[] consultYears = {
             "2023", "2024", "2025"
@@ -148,18 +153,7 @@ public class AddConsultations extends JFrame {
         tMobile.setLocation(250, 300);
         c.add(tMobile);
 
-        // Notes
-        JLabel notes = new JLabel("Additional Notes");
-        notes.setFont(new Font("Arial", Font.PLAIN, 16));
-        notes.setSize(200, 20);
-        notes.setLocation(600, 250);
-        c.add(notes);
 
-        JTextArea jNotes = new JTextArea();
-        jNotes.setFont(new Font("Arial", Font.PLAIN, 15));
-        jNotes.setSize(250, 100);
-        jNotes.setLocation(750, 250);
-        c.add(jNotes);
 
         // Doctor Specialization
         JLabel doctorSpecialization = new JLabel("Specialization");
@@ -227,11 +221,36 @@ public class AddConsultations extends JFrame {
         consultYear.setLocation(900, 200);
         c.add(consultYear);
 
+        // Consultation Time
+        JLabel consultTime = new JLabel("Booking Time");
+        consultTime.setFont(new Font("Arial", Font.PLAIN, 16));
+        consultTime.setSize(200, 20);
+        consultTime.setLocation(600, 250);
+        c.add(consultTime);
+        JComboBox<String> comboBoxT = new JComboBox<>(time);
+        comboBoxT.setSize(100, 30);
+        comboBoxT.setLocation(750, 250);
+        comboBoxT.setRenderer(new DefaultListCellRenderer());
+        c.add(comboBoxT);
+
+        // Notes
+        JLabel notes = new JLabel("Additional Notes");
+        notes.setFont(new Font("Arial", Font.PLAIN, 16));
+        notes.setSize(200, 20);
+        notes.setLocation(600, 300);
+        c.add(notes);
+
+        JTextArea jNotes = new JTextArea();
+        jNotes.setFont(new Font("Arial", Font.PLAIN, 15));
+        jNotes.setSize(250, 100);
+        jNotes.setLocation(750, 300);
+        c.add(jNotes);
+
         // Book a consultation button
         JButton book = new JButton("Book");
         book.setFocusPainted(false);
         book.setSize(100,30);
-        book.setLocation(600,300);
+        book.setLocation(600,350);
         try{
             book.addActionListener(e -> {
                 String patientName = tFirstname.getText() + " " + tSurname.getText();
@@ -266,7 +285,7 @@ public class AddConsultations extends JFrame {
                     Consultations.availabilities.add(new Availability(doctorName,formatBox));
                     saveAvailableConsultations();
                     Consultations.consultations.add(new Consultations(consultationId, patient, doctorName,
-                            jNotes.getText(), pastConsultations(patientName), formatBox));
+                            jNotes.getText(), pastConsultations(patientName), formatBox, (String) comboBoxT.getSelectedItem()));
                     saveConsultations();
                     JOptionPane.showMessageDialog(this,"Consultation Added Successfully!");
                     for(Consultations con : Consultations.consultations){

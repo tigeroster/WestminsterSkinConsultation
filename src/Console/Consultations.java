@@ -11,6 +11,7 @@ public class Consultations implements Serializable {
     private String notes;
     private double cost;
     private Date consultationDate;
+    private String time;
     public static ArrayList<Consultations> consultations = new ArrayList<>();
     public static ArrayList<Availability> availabilities = new ArrayList<>();
 
@@ -18,13 +19,22 @@ public class Consultations implements Serializable {
     }
 
     public Consultations(String consultationId, Patient patient,
-                         String doctor, String notes, double cost, Date consultationDate) {
+                         String doctor, String notes, double cost, Date consultationDate, String time) {
         this.consultationId = consultationId;
         this.patient = patient;
         this.notes = notes;
         this.doctor = doctor;
         this.cost = cost;
         this.consultationDate = consultationDate;
+        this.time = time;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public Date getConsultationDate() {
