@@ -85,15 +85,19 @@ public class Consultations implements Serializable {
         this.notes = notes;
     }
 
-    public static boolean checkAvailability(ArrayList<Availability> availabilities, String doctorName, Date date) {
+    public static boolean checkAvailability(ArrayList<Availability> availabilities, String doctorName, Date date,
+                                            String spec, String time) {
         boolean state = false;
         if (availabilities.size() != 0) {
             for (Availability available : availabilities) {
-                if (available.getDoctorName().equals(doctorName)) {
-                    if (available.getConsultationDate().equals(date)) {
+                if (available.getDoctorName().equals(doctorName)&& available.getSpecialization().equals(spec)) {
+                    if (available.getConsultationDate().equals(date) && available.getTime().equals(time)) {
                         state = false;
                         break;
-                    } else {
+                    } else if(available.getConsultationDate().equals(date) && !available.getTime().equals(time)){
+                        state = true;
+                        break;
+                    }else{
                         state = true;
                     }
                 } else {

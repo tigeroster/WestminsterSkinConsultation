@@ -15,6 +15,7 @@ import static Console.Doctor.doctors;
 public class AddConsultations extends JFrame {
     JComboBox<Object> comboBox = new JComboBox<>();
     JComboBox<Object> comboBoxS = new JComboBox<>();
+    public static File filePath;
 
     private final String[] dates
             = { "1", "2", "3", "4", "5",
@@ -251,56 +252,83 @@ public class AddConsultations extends JFrame {
         book.setFocusPainted(false);
         book.setSize(100,30);
         book.setLocation(600,350);
+
+        // Upload a file
+        JButton upload = new JButton("Upload a file");
+        upload.setFocusPainted(false);
+        upload.setSize(150,30);
+        upload.setLocation(1010,300);
+        c.add(upload);
+
+        upload.addActionListener(e -> {
+            JFileChooser fileUpload = new JFileChooser();
+            int res = fileUpload.showOpenDialog(null);
+
+            if(res == JFileChooser.APPROVE_OPTION){
+                filePath = new File(fileUpload.getSelectedFile().getAbsoluteFile().toURI());
+                System.out.println(filePath);
+            }
+        });
+
         try{
             book.addActionListener(e -> {
-                String patientName = tFirstname.getText() + " " + tSurname.getText();
-                String doctorName = (String) comboBox.getSelectedItem();
-                String dateBox = (String) consultDateBox.getSelectedItem();
-                String monthBox = (String) consultMonth.getSelectedItem();
-                String yearBox = (String) consultYear.getSelectedItem();
-                String pDateBox = (String) date.getSelectedItem();
-                String pMonthBox = (String) month.getSelectedItem();
-                String pYearBox = (String) year.getSelectedItem();
-                String dateOfBirth = pDateBox +"/" + pMonthBox + "/" + pYearBox;
-                String dateFormat = dateBox +"/" + monthBox + "/" + yearBox;
-                Date formatBox;
-                Date dobBox;
-                try {
-                    dobBox = dateFormatter.parse(dateOfBirth);
-                } catch (ParseException ex) {
-                    throw new RuntimeException(ex);
-                }
-                try {
-                    formatBox = dateFormatter.parse(dateFormat);
-                } catch (ParseException ex) {
-                    throw new RuntimeException(ex);
-                }
-                if(Consultations.checkAvailability(Consultations.availabilities, doctorName, formatBox)){
-                    String id = Helper.idGenerator(5);
-                    String consultationId = Helper.idGenerator(8);
-                    String genderSelected = getSelectedButtonText(gen);
-                    Patient patient = new Patient(tFirstname.getText(), tSurname.getText(), dobBox,
-                            tMobile.getText(), genderSelected, id);
-                    Patient.patients.add(patient);
-                    Consultations.availabilities.add(new Availability(doctorName,formatBox));
-                    saveAvailableConsultations();
-                    Consultations.consultations.add(new Consultations(consultationId, patient, doctorName,
-                            jNotes.getText(), pastConsultations(patientName), formatBox, (String) comboBoxT.getSelectedItem()));
-                    saveConsultations();
-                    JOptionPane.showMessageDialog(this,"Consultation Added Successfully!");
-                    for(Consultations con : Consultations.consultations){
-                        System.out.println("Consultation ID: " + con.getConsultationId());
-                        System.out.println("Patient Name: " + con.getPatient().getName() + con.getPatient().getSurname());
-                        System.out.println("Patient ID: " + con.getPatient().getId());
-                        System.out.println("Doctor Assigned: " + con.getDoctor());
-                        System.out.println("Consultation Cost: " + "$" + con.getCost());
-                    }
-                    tFirstname.setText("");
-                    tSurname.setText("");
-                    jNotes.setText("");
-                    tMobile.setText("");
+                if(tFirstname.getText().equals("")|| tSurname.getText().equals("")){
+                    JOptionPane.showMessageDialog(this,"Please enter data to add a Consultation");
                 }else{
-                    JOptionPane.showMessageDialog(this,"Doctor already occupied\nOn call doctor assigned");
+                    String patientName = tFirstname.getText() + " " + tSurname.getText();
+                    String doctorName = (String) comboBox.getSelectedItem();
+                    String dateBox = (String) consultDateBox.getSelectedItem();
+                    String monthBox = (String) consultMonth.getSelectedItem();
+                    String yearBox = (String) consultYear.getSelectedItem();
+                    String pDateBox = (String) date.getSelectedItem();
+                    String pMonthBox = (String) month.getSelectedItem();
+                    String pYearBox = (String) year.getSelectedItem();
+                    String dateOfBirth = pDateBox +"/" + pMonthBox + "/" + pYearBox;
+                    String dateFormat = dateBox +"/" + monthBox + "/" + yearBox;
+                    String spec = (String) comboBoxS.getSelectedItem();
+                    String time = (String) comboBoxT.getSelectedItem();
+                    Date formatBox;
+                    Date dobBox;
+                    try {
+                        dobBox = dateFormatter.parse(dateOfBirth);
+                    } catch (ParseException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    try {
+                        formatBox = dateFormatter.parse(dateFormat);
+                    } catch (ParseException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    if(Consultations.checkAvailability(Consultations.availabilities, doctorName, formatBox, spec, time)){
+                        String id = Helper.idGenerator(5);
+                        String consultationId = Helper.idGenerator(8);
+                        String genderSelected = getSelectedButtonText(gen);
+                        Patient patient = new Patient(tFirstname.getText(), tSurname.getText(), dobBox,
+                                tMobile.getText(), genderSelected, id);
+                        Patient.patients.add(patient);
+                        Consultations.availabilities.add(new Availability(doctorName,formatBox,
+                                spec, time));
+                        saveAvailableConsultations();
+                        Consultations.consultations.add(new Consultations(consultationId, patient, doctorName,
+                                jNotes.getText(), pastConsultations(patientName), formatBox, (String) comboBoxT.getSelectedItem()));
+                        saveConsultations();
+                        JOptionPane.showMessageDialog(this,"Consultation Added Successfully!");
+                        for(Consultations con : Consultations.consultations){
+                            System.out.println("Consultation ID: " + con.getConsultationId());
+                            System.out.println("Patient Name: " + con.getPatient().getName() + con.getPatient().getSurname());
+                            System.out.println("Patient ID: " + con.getPatient().getId());
+                            System.out.println("Doctor Assigned: " + con.getDoctor());
+                            System.out.println("Consultation Cost: " + "$" + con.getCost());
+                            System.out.println("Consultation Time: " + con.getTime());
+                        }
+                        tFirstname.setText("");
+                        tSurname.setText("");
+                        jNotes.setText("");
+                        tMobile.setText("");
+                    }else{
+                        JOptionPane.showMessageDialog(this,"Consultation cannot be added\nPlease check if the doctor is " +
+                                "available");
+                    }
                 }
             });
         }catch(RuntimeException runtimeException){

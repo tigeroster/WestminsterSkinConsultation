@@ -30,8 +30,8 @@ public class Home extends JFrame{
             addConsultations.setFocusPainted(false);
             addConsultations.addActionListener(e -> {
                 if(e.getSource() == addConsultations){
-//                    AddConsultations.loadAvailableConsultations();
-//                    AddConsultations.loadConsultations();
+                    AddConsultations.loadAvailableConsultations();
+                    AddConsultations.loadConsultations();
                     new AddConsultations();
                 }
             });
