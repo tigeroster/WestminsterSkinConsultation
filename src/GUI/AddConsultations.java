@@ -9,43 +9,22 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Objects;
 
 import static Console.Doctor.doctors;
-
 public class AddConsultations extends JFrame {
     JComboBox<Object> comboBox = new JComboBox<>();
     JComboBox<Object> comboBoxS = new JComboBox<>();
     public static File filePath;
-
-    private final String[] dates
-            = { "1", "2", "3", "4", "5",
-            "6", "7", "8", "9", "10",
-            "11", "12", "13", "14", "15",
-            "16", "17", "18", "19", "20",
-            "21", "22", "23", "24", "25",
-            "26", "27", "28", "29", "30",
-            "31" };
-    private final String[] months
-            = { "Jan", "feb", "Mar", "Apr",
-            "May", "Jun", "July", "Aug",
-            "Sup", "Oct", "Nov", "Dec" };
-    private final String[] years
-            = { "1990","1991","1992","1993","1994","1995", "1996", "1997", "1998",
-            "1999", "2000", "2001", "2002",
-            "2003", "2004", "2005", "2006",
-            "2007", "2008", "2009", "2010",
-            "2011", "2012", "2013", "2014",
-            "2015", "2016", "2017", "2018",
-            "2019", "2020", "2021", "2022" };
+    String consultationId;
+    String id;
+    String genderSelected;
 
     private final String[] time = {
             "09:00", "10:00", "11:00", "12:00", "01:00", "02:00", "03:00", "04:00", "05:00","06:00"
     };
 
-    private final String[] consultYears = {
-            "2023", "2024", "2025"
-    };
-    public static SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MMM/yyyy");
+    public static SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
     public AddConsultations(){
         Container c = getContentPane();
         c.setLayout(null);
@@ -123,23 +102,23 @@ public class AddConsultations extends JFrame {
         dob.setLocation(100, 250);
         c.add(dob);
 
-        JComboBox<String> date = new JComboBox<>(dates);
-        date.setFont(new Font("Arial", Font.PLAIN, 15));
-        date.setSize(50, 20);
-        date.setLocation(250, 250);
-        c.add(date);
+        JLabel dateOfBirthL = new JLabel();
+        dateOfBirthL.setSize(100,30);
+        dateOfBirthL.setLocation(250,250);
+        dateOfBirthL.setBorder(BorderFactory.createLineBorder(Color.black, 1));
+        c.add(dateOfBirthL);
 
-        JComboBox<String> month = new JComboBox<>(months);
-        month.setFont(new Font("Arial", Font.PLAIN, 15));
-        month.setSize(80, 20);
-        month.setLocation(300, 250);
-        c.add(month);
-
-        JComboBox<String> year = new JComboBox<>(years);
-        year.setFont(new Font("Arial", Font.PLAIN, 15));
-        year.setSize(100, 20);
-        year.setLocation(380, 250);
-        c.add(year);
+        ImageIcon getDateOfBirthIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("calendar.png")));
+        JButton getDob = new JButton(getDateOfBirthIcon);
+        getDob.setFocusPainted(false);
+        getDob.setSize(50,30);
+        getDob.setLocation(350,250);
+        c.add(getDob);
+        getDob.addActionListener(e -> {
+            if(e.getSource() == getDob){
+                dateOfBirthL.setText(new DatePicker(this).setPickedDate());
+            }
+        });
 
         // Mobile Number
         JLabel mobile = new JLabel("Mobile Number");
@@ -153,8 +132,6 @@ public class AddConsultations extends JFrame {
         tMobile.setSize(250, 30);
         tMobile.setLocation(250, 300);
         c.add(tMobile);
-
-
 
         // Doctor Specialization
         JLabel doctorSpecialization = new JLabel("Specialization");
@@ -204,23 +181,22 @@ public class AddConsultations extends JFrame {
         consultDate.setLocation(600, 200);
         c.add(consultDate);
 
-        JComboBox<String> consultDateBox = new JComboBox<>(dates);
-        consultDateBox.setFont(new Font("Arial", Font.PLAIN, 15));
-        consultDateBox.setSize(60, 20);
-        consultDateBox.setLocation(750, 200);
-        c.add(consultDateBox);
+        JLabel consultDateL = new JLabel();
+        consultDateL.setSize(100,30);
+        consultDateL.setLocation(750,200);
+        consultDateL.setBorder(BorderFactory.createLineBorder(Color.black, 1));
+        c.add(consultDateL);
 
-        JComboBox<String> consultMonth = new JComboBox<>(months);
-        consultMonth.setFont(new Font("Arial", Font.PLAIN, 15));
-        consultMonth.setSize(80, 20);
-        consultMonth.setLocation(820, 200);
-        c.add(consultMonth);
-
-        JComboBox<String> consultYear = new JComboBox<>(consultYears);
-        consultYear.setFont(new Font("Arial", Font.PLAIN, 15));
-        consultYear.setSize(100, 20);
-        consultYear.setLocation(900, 200);
-        c.add(consultYear);
+        JButton getConsultDate = new JButton(getDateOfBirthIcon);
+        getConsultDate.setFocusPainted(false);
+        getConsultDate.setSize(50,30);
+        getConsultDate.setLocation(850,200);
+        c.add(getConsultDate);
+        getConsultDate.addActionListener(e -> {
+            if(e.getSource() == getConsultDate){
+                consultDateL.setText(new DatePicker(this).setPickedDate());
+            }
+        });
 
         // Consultation Time
         JLabel consultTime = new JLabel("Booking Time");
@@ -272,19 +248,13 @@ public class AddConsultations extends JFrame {
 
         try{
             book.addActionListener(e -> {
-                if(tFirstname.getText().equals("")|| tSurname.getText().equals("")){
+                if(tFirstname.getText().equals("")|| tSurname.getText().equals("") || comboBox.getSelectedItem() == null || comboBoxS.getSelectedItem() == null){
                     JOptionPane.showMessageDialog(this,"Please enter data to add a Consultation");
                 }else{
                     String patientName = tFirstname.getText() + " " + tSurname.getText();
                     String doctorName = (String) comboBox.getSelectedItem();
-                    String dateBox = (String) consultDateBox.getSelectedItem();
-                    String monthBox = (String) consultMonth.getSelectedItem();
-                    String yearBox = (String) consultYear.getSelectedItem();
-                    String pDateBox = (String) date.getSelectedItem();
-                    String pMonthBox = (String) month.getSelectedItem();
-                    String pYearBox = (String) year.getSelectedItem();
-                    String dateOfBirth = pDateBox +"/" + pMonthBox + "/" + pYearBox;
-                    String dateFormat = dateBox +"/" + monthBox + "/" + yearBox;
+                    String dateOfBirth = dateOfBirthL.getText();
+                    String dateFormat = consultDateL.getText();
                     String spec = (String) comboBoxS.getSelectedItem();
                     String time = (String) comboBoxT.getSelectedItem();
                     Date formatBox;
@@ -300,9 +270,9 @@ public class AddConsultations extends JFrame {
                         throw new RuntimeException(ex);
                     }
                     if(Consultations.checkAvailability(Consultations.availabilities, doctorName, formatBox, spec, time)){
-                        String id = Helper.idGenerator(5);
-                        String consultationId = Helper.idGenerator(8);
-                        String genderSelected = getSelectedButtonText(gen);
+                        id = Helper.idGenerator(5);
+                        consultationId = Helper.idGenerator(8);
+                        genderSelected = getSelectedButtonText(gen);
                         Patient patient = new Patient(tFirstname.getText(), tSurname.getText(), dobBox,
                                 tMobile.getText(), genderSelected, id);
                         Patient.patients.add(patient);
@@ -325,9 +295,34 @@ public class AddConsultations extends JFrame {
                         tSurname.setText("");
                         jNotes.setText("");
                         tMobile.setText("");
+                        dateOfBirthL.setText("");
+                        getConsultDate.setText("");
                     }else{
-                        JOptionPane.showMessageDialog(this,"Consultation cannot be added\nPlease check if the doctor is " +
-                                "available");
+                        for(String special : Doctor.specializationNames){
+                            if(special.equals(spec)){
+                                for(Consultations con : Consultations.consultations){
+                                    if(!con.getDoctor().equals(doctorName) && con.getConsultationDate().equals(formatBox) && con.getTime().equals(comboBoxT.getSelectedItem())){
+                                        id = Helper.idGenerator(5);
+                                        consultationId = Helper.idGenerator(8);
+                                        genderSelected = getSelectedButtonText(gen);
+                                        Patient patient = new Patient(tFirstname.getText(), tSurname.getText(), dobBox,
+                                                tMobile.getText(), genderSelected, id);
+                                        Patient.patients.add(patient);
+                                        Consultations.availabilities.add(new Availability(doctorName,formatBox,
+                                                spec, time));
+                                        saveAvailableConsultations();
+                                        Consultations.consultations.add(new Consultations(consultationId, patient,
+                                                con.getDoctor(),
+                                                jNotes.getText(), pastConsultations(patientName), con.getConsultationDate(),
+                                                con.getTime()));
+                                        saveConsultations();
+                                        JOptionPane.showMessageDialog(this,"Consultation Added Successfully! 2");
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                        }
                     }
                 }
             });
