@@ -23,6 +23,7 @@ public class Home extends JFrame{
             viewDoctorsButton.setFocusPainted(false);
             viewDoctorsButton.addActionListener(e -> {
                 if(e.getSource() == viewDoctorsButton){
+                    frame.dispose();
                     new ViewDoctors();
                 }
             });
@@ -30,8 +31,9 @@ public class Home extends JFrame{
             addConsultations.setFocusPainted(false);
             addConsultations.addActionListener(e -> {
                 if(e.getSource() == addConsultations){
+                    frame.dispose();
                     AddConsultations.loadAvailableConsultations();
-                    AddConsultations.loadConsultations();
+                    AddConsultations.decrypt();
                     new AddConsultations();
                 }
             });

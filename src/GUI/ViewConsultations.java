@@ -8,6 +8,7 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Objects;
 
 public class ViewConsultations extends JFrame {
     JScrollPane scroll;
@@ -30,6 +31,17 @@ public class ViewConsultations extends JFrame {
         add(guide2);
         add(topic);
         add(guide);
+        ImageIcon backButton = new ImageIcon(Objects.requireNonNull(getClass().getResource("back1.png")));
+        JButton back = new JButton(backButton);
+        back.setFocusPainted(false);
+        back.setLocation(50,20);
+        back.setSize(30,30);
+        back.addActionListener(e -> {
+            dispose();
+            new AddConsultations();
+
+        });
+        add(back);
 
         table.setRowHeight(30);
         table.getTableHeader().setBackground(Color.yellow);

@@ -2,11 +2,16 @@ package GUI;
 
 import Console.*;
 
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.security.Key;
+import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Objects;
@@ -35,6 +40,18 @@ public class AddConsultations extends JFrame {
         title.setLocation(450,30);
         c.add(title);
 
+        // Home button
+        ImageIcon homeIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("home1.png")));
+        JButton home = new JButton(homeIcon);
+        home.setSize(30,30);
+        home.setFocusPainted(false);
+        home.setLocation(50,20);
+        home.addActionListener(e -> {
+            dispose();
+            new Home();
+        });
+        c.add(home);
+
         // View Consultations
         JButton viewConsultations = new JButton("All Consultations");
         viewConsultations.setFocusPainted(false);
@@ -42,6 +59,7 @@ public class AddConsultations extends JFrame {
         viewConsultations.setLocation(1000,30);
         try{
             viewConsultations.addActionListener(e -> {
+                dispose();
                 new ViewConsultations();
             });
         }catch(Exception e){
@@ -132,6 +150,19 @@ public class AddConsultations extends JFrame {
         tMobile.setSize(250, 30);
         tMobile.setLocation(250, 300);
         c.add(tMobile);
+
+        // NIC
+        JLabel nicL = new JLabel("NIC Number");
+        nicL.setFont(new Font("Arial", Font.PLAIN, 16));
+        nicL.setSize(200, 20);
+        nicL.setLocation(100, 350);
+        c.add(nicL);
+
+        JTextField nic = new JTextField();
+        nic.setFont(new Font("Arial", Font.PLAIN, 15));
+        nic.setSize(250, 30);
+        nic.setLocation(250, 350);
+        c.add(nic);
 
         // Doctor Specialization
         JLabel doctorSpecialization = new JLabel("Specialization");
@@ -274,23 +305,16 @@ public class AddConsultations extends JFrame {
                         consultationId = Helper.idGenerator(8);
                         genderSelected = getSelectedButtonText(gen);
                         Patient patient = new Patient(tFirstname.getText(), tSurname.getText(), dobBox,
-                                tMobile.getText(), genderSelected, id);
+                                tMobile.getText(), genderSelected, id, nic.getText());
                         Patient.patients.add(patient);
                         Consultations.availabilities.add(new Availability(doctorName,formatBox,
                                 spec, time));
                         saveAvailableConsultations();
                         Consultations.consultations.add(new Consultations(consultationId, patient, doctorName,
-                                jNotes.getText(), pastConsultations(patientName), formatBox, (String) comboBoxT.getSelectedItem()));
-                        saveConsultations();
+                                jNotes.getText(), pastConsultations(patientName, nic.getText()), formatBox,
+                                (String) comboBoxT.getSelectedItem()));
+                        encrypt();
                         JOptionPane.showMessageDialog(this,"Consultation Added Successfully!");
-                        for(Consultations con : Consultations.consultations){
-                            System.out.println("Consultation ID: " + con.getConsultationId());
-                            System.out.println("Patient Name: " + con.getPatient().getName() + con.getPatient().getSurname());
-                            System.out.println("Patient ID: " + con.getPatient().getId());
-                            System.out.println("Doctor Assigned: " + con.getDoctor());
-                            System.out.println("Consultation Cost: " + "$" + con.getCost());
-                            System.out.println("Consultation Time: " + con.getTime());
-                        }
                         tFirstname.setText("");
                         tSurname.setText("");
                         jNotes.setText("");
@@ -298,31 +322,7 @@ public class AddConsultations extends JFrame {
                         dateOfBirthL.setText("");
                         getConsultDate.setText("");
                     }else{
-                        for(String special : Doctor.specializationNames){
-                            if(special.equals(spec)){
-                                for(Consultations con : Consultations.consultations){
-                                    if(!con.getDoctor().equals(doctorName) && con.getConsultationDate().equals(formatBox) && con.getTime().equals(comboBoxT.getSelectedItem())){
-                                        id = Helper.idGenerator(5);
-                                        consultationId = Helper.idGenerator(8);
-                                        genderSelected = getSelectedButtonText(gen);
-                                        Patient patient = new Patient(tFirstname.getText(), tSurname.getText(), dobBox,
-                                                tMobile.getText(), genderSelected, id);
-                                        Patient.patients.add(patient);
-                                        Consultations.availabilities.add(new Availability(doctorName,formatBox,
-                                                spec, time));
-                                        saveAvailableConsultations();
-                                        Consultations.consultations.add(new Consultations(consultationId, patient,
-                                                con.getDoctor(),
-                                                jNotes.getText(), pastConsultations(patientName), con.getConsultationDate(),
-                                                con.getTime()));
-                                        saveConsultations();
-                                        JOptionPane.showMessageDialog(this,"Consultation Added Successfully! 2");
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                        }
+                        System.out.println("Else statement");
                     }
                 }
             });
@@ -383,49 +383,12 @@ public class AddConsultations extends JFrame {
         }
     }
 
-    public static void loadConsultations() {
-        try{
-            FileInputStream fileInputStream = new FileInputStream("Consultations.txt");
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            while(true){
-                try{
-                    Consultations available = (Consultations) objectInputStream.readObject();
-                    Consultations.consultations.add(available);
-                }catch(Exception e){
-                    break;
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void saveConsultations(){
-        try {
-            File file = new File("Consultations.txt");
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            try {
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-                for (Consultations available : Consultations.consultations) {
-                    objectOutputStream.writeObject(available);
-                }
-                objectOutputStream.close();
-                fileOutputStream.close();
-                System.out.println("Saved Successfully!");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }catch(IOException ex){
-            ex.printStackTrace();
-        }
-    }
-
-    public double pastConsultations(String pName){
+    public double pastConsultations(String pName, String nic){
         double cost = 0;
         if(Consultations.consultations.size() != 0){
             for(Consultations con : Consultations.consultations){
                 String name = con.getPatient().getName() + " " + con.getPatient().getSurname();
-                if(name.equals(pName)){
+                if(name.equals(pName) && con.getPatient().getNic().equals(nic)){
                     cost = 25;
                     break;
                 }else{
@@ -436,5 +399,60 @@ public class AddConsultations extends JFrame {
             cost = 15;
         }
         return cost;
+    }
+
+    public static void encrypt(){
+        try {
+            KeyGenerator kg = KeyGenerator.getInstance("AES");
+            SecretKey key = kg.generateKey();
+            SecureRandom random = new SecureRandom();
+            byte[] iv = new byte[16];
+            random.nextBytes(iv);
+
+            Cipher cipher = Cipher.getInstance(key.getAlgorithm() + "/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
+
+            ObjectOutputStream oos = null;
+            for (Consultations con : Consultations.consultations) {
+                SealedObject sealedEm1 = new SealedObject(con, cipher);
+                FileOutputStream fos = new FileOutputStream("encryptedConsultationData.aes");
+                CipherOutputStream cos = new CipherOutputStream(fos, cipher);
+                oos = new ObjectOutputStream(cos);
+                oos.writeObject(sealedEm1);
+            }
+            assert oos != null;
+            oos.close();
+
+        }catch(Exception exception){
+            exception.printStackTrace();
+        }
+    }
+
+    public static void decrypt(){
+        try{
+            KeyGenerator kg = KeyGenerator.getInstance("AES");
+            SecretKey key = kg.generateKey();
+            byte[] iv = new byte[16];
+            Cipher cipher = Cipher.getInstance(key.getAlgorithm() + "/CBC/PKCS5Padding");
+            cipher.init( Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
+
+            CipherInputStream cipherInputStream = new CipherInputStream(new BufferedInputStream(new FileInputStream("encryptedConsultationData.aes")), cipher );
+            ObjectInputStream inputStream = new ObjectInputStream(cipherInputStream);
+            while(true){
+                try{
+                    SealedObject sealedObject = (SealedObject) inputStream.readObject();
+                    Consultations consultations1 = (Consultations) sealedObject.getObject(cipher);
+                    Consultations.consultations.add(consultations1);
+                    System.out.println(consultations1.getConsultationId() + " " + consultations1.getDoctor());
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                    break;
+                }
+            }
+            inputStream.close();
+            System.out.println("Decryption works");
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
     }
 }
