@@ -1,5 +1,7 @@
 package Console;
 
+import datechooser.model.DateChoose;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -32,7 +34,7 @@ public class DatePicker extends JFrame {
                 });
             if (x < 7) {
                 button[x].setText(header[x]);
-                button[x].setForeground(Color.red);
+                button[x].setForeground(Color.white);
             }
             p1.add(button[x]);
         }

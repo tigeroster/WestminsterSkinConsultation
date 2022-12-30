@@ -83,6 +83,7 @@ public class ViewConsultations extends JFrame {
         getContentPane().setLayout(null);
         setVisible(true);
         setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Consultations - Westminster Skin Consultations");
     }
 }

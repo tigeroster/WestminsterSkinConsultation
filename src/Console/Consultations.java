@@ -90,20 +90,19 @@ public class Consultations implements Serializable {
         boolean state = false;
         if (availabilities.size() != 0) {
             for (Availability available : availabilities) {
-                if (available.getDoctorName().equals(doctorName)&& available.getSpecialization().equals(spec) && available.getConsultationDate().equals(date) && available.getTime().equals(time)) {
-                    state = false;
-                    break;
-                }else if(available.getDoctorName().equals(doctorName)&& available.getSpecialization().equals(spec) && available.getConsultationDate().equals(date) && !available.getTime().equals(time)){
-                        state = true;
+                if (available.getDoctorName().equals(doctorName)&& available.getSpecialization().equals(spec)) {
+                    if(available.getConsultationDate().equals(date) && available.getTime().equals(time)){
+                        state = false;
                         break;
-                }
-                else if(available.getDoctorName().equals(doctorName)&& available.getSpecialization().equals(spec) && !available.getConsultationDate().equals(date) && available.getTime().equals(time)){
-                    state = true;
-                    break;
+                    }else {
+                        state = true;
+                    }
                 }else{
                     state = true;
                 }
             }
+        }else{
+            state = true;
         }
         return state;
     }

@@ -1,8 +1,5 @@
 package GUI;
 
-import Console.Availability;
-import Console.Consultations;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
@@ -32,8 +29,8 @@ public class Home extends JFrame{
             addConsultations.addActionListener(e -> {
                 if(e.getSource() == addConsultations){
                     frame.dispose();
-                    AddConsultations.loadAvailableConsultations();
-                    AddConsultations.decrypt();
+//                    AddConsultations.loadAvailableConsultations();
+//                    AddConsultations.loadConsultations();
                     new AddConsultations();
                 }
             });

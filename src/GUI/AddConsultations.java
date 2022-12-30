@@ -1,33 +1,38 @@
 package GUI;
 
 import Console.*;
+import datechooser.model.DateChoose;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.security.Key;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Objects;
+import java.util.*;
 
 import static Console.Doctor.doctors;
 public class AddConsultations extends JFrame {
     JComboBox<Object> comboBox = new JComboBox<>();
     JComboBox<Object> comboBoxS = new JComboBox<>();
+    JComboBox<String> comboBoxT;
     public static File filePath;
-    String consultationId;
-    String id;
-    String genderSelected;
-
-    private final String[] time = {
+    ButtonGroup gen;
+    String id, genderSelected, consultationId,doctorName, spec, time, patientName;
+    JTextField dobPicker;
+    JTextArea jNotes;
+    JTextField consultDatePicker,tFirstname, tSurname, tMobile, nic;
+    Date formatBox, dobBox;
+    JButton book;
+    private final String[] timeList = {
             "09:00", "10:00", "11:00", "12:00", "01:00", "02:00", "03:00", "04:00", "05:00","06:00"
     };
+
+    public String[] getTime() {
+        return timeList;
+    }
 
     public static SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
     public AddConsultations(){
@@ -74,7 +79,7 @@ public class AddConsultations extends JFrame {
         firstname.setLocation(100, 110);
         c.add(firstname);
 
-        JTextField tFirstname = new JTextField();
+        tFirstname = new JTextField();
         tFirstname.setFont(new Font("Arial", Font.PLAIN, 15));
         tFirstname.setSize(250, 30);
         tFirstname.setLocation(250, 100);
@@ -87,7 +92,7 @@ public class AddConsultations extends JFrame {
         surname.setLocation(100, 150);
         c.add(surname);
 
-        JTextField tSurname = new JTextField();
+        tSurname = new JTextField();
         tSurname.setFont(new Font("Arial", Font.PLAIN, 15));
         tSurname.setSize(250, 30);
         tSurname.setLocation(250, 150);
@@ -109,7 +114,7 @@ public class AddConsultations extends JFrame {
         male.setSelected(true);
         c.add(male);
         c.add(female);
-        ButtonGroup gen = new ButtonGroup();
+        gen = new ButtonGroup();
         gen.add(male);
         gen.add(female);
 
@@ -120,23 +125,19 @@ public class AddConsultations extends JFrame {
         dob.setLocation(100, 250);
         c.add(dob);
 
-        JLabel dateOfBirthL = new JLabel();
-        dateOfBirthL.setSize(100,30);
-        dateOfBirthL.setLocation(250,250);
-        dateOfBirthL.setBorder(BorderFactory.createLineBorder(Color.black, 1));
-        c.add(dateOfBirthL);
-
-        ImageIcon getDateOfBirthIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("calendar.png")));
-        JButton getDob = new JButton(getDateOfBirthIcon);
-        getDob.setFocusPainted(false);
-        getDob.setSize(50,30);
-        getDob.setLocation(350,250);
-        c.add(getDob);
-        getDob.addActionListener(e -> {
-            if(e.getSource() == getDob){
-                dateOfBirthL.setText(new DatePicker(this).setPickedDate());
-            }
+        dobPicker = new JTextField();
+        dobPicker.setFont(new Font("Arial", Font.PLAIN, 15));
+        dobPicker.setSize(100, 30);
+        dobPicker.setLocation(250, 250);
+        JButton dobButton = new JButton();
+        dobButton.setFocusPainted(false);
+        dobButton.setSize(50,30);
+        dobButton.setLocation(350,250);
+        dobButton.addActionListener(e-> {
+            dobPicker.setText(new DatePicker(this).setPickedDate());
         });
+        c.add(dobButton);
+        c.add(dobPicker);
 
         // Mobile Number
         JLabel mobile = new JLabel("Mobile Number");
@@ -145,7 +146,7 @@ public class AddConsultations extends JFrame {
         mobile.setLocation(100, 300);
         c.add(mobile);
 
-        JTextField tMobile = new JTextField();
+        tMobile = new JTextField();
         tMobile.setFont(new Font("Arial", Font.PLAIN, 15));
         tMobile.setSize(250, 30);
         tMobile.setLocation(250, 300);
@@ -158,7 +159,7 @@ public class AddConsultations extends JFrame {
         nicL.setLocation(100, 350);
         c.add(nicL);
 
-        JTextField nic = new JTextField();
+        nic = new JTextField();
         nic.setFont(new Font("Arial", Font.PLAIN, 15));
         nic.setSize(250, 30);
         nic.setLocation(250, 350);
@@ -212,22 +213,18 @@ public class AddConsultations extends JFrame {
         consultDate.setLocation(600, 200);
         c.add(consultDate);
 
-        JLabel consultDateL = new JLabel();
-        consultDateL.setSize(100,30);
-        consultDateL.setLocation(750,200);
-        consultDateL.setBorder(BorderFactory.createLineBorder(Color.black, 1));
-        c.add(consultDateL);
-
-        JButton getConsultDate = new JButton(getDateOfBirthIcon);
-        getConsultDate.setFocusPainted(false);
-        getConsultDate.setSize(50,30);
-        getConsultDate.setLocation(850,200);
-        c.add(getConsultDate);
-        getConsultDate.addActionListener(e -> {
-            if(e.getSource() == getConsultDate){
-                consultDateL.setText(new DatePicker(this).setPickedDate());
-            }
+        consultDatePicker = new JTextField();
+        consultDatePicker.setFont(new Font("Arial", Font.PLAIN, 15));
+        consultDatePicker.setSize(100, 30);
+        consultDatePicker.setLocation(750, 200);
+        JButton consultDateButton = new JButton();
+        consultDateButton.setSize(50,30);
+        consultDateButton.setLocation(850,200);
+        c.add(consultDateButton);
+        consultDateButton.addActionListener(e-> {
+            consultDatePicker.setText(new DatePicker(this).setPickedDate());
         });
+        c.add(consultDatePicker);
 
         // Consultation Time
         JLabel consultTime = new JLabel("Booking Time");
@@ -235,7 +232,7 @@ public class AddConsultations extends JFrame {
         consultTime.setSize(200, 20);
         consultTime.setLocation(600, 250);
         c.add(consultTime);
-        JComboBox<String> comboBoxT = new JComboBox<>(time);
+        comboBoxT = new JComboBox<>(timeList);
         comboBoxT.setSize(100, 30);
         comboBoxT.setLocation(750, 250);
         comboBoxT.setRenderer(new DefaultListCellRenderer());
@@ -248,14 +245,14 @@ public class AddConsultations extends JFrame {
         notes.setLocation(600, 300);
         c.add(notes);
 
-        JTextArea jNotes = new JTextArea();
+        jNotes = new JTextArea();
         jNotes.setFont(new Font("Arial", Font.PLAIN, 15));
         jNotes.setSize(250, 100);
         jNotes.setLocation(750, 300);
         c.add(jNotes);
 
         // Book a consultation button
-        JButton book = new JButton("Book");
+        book = new JButton("Book");
         book.setFocusPainted(false);
         book.setSize(100,30);
         book.setLocation(600,350);
@@ -282,14 +279,12 @@ public class AddConsultations extends JFrame {
                 if(tFirstname.getText().equals("")|| tSurname.getText().equals("") || comboBox.getSelectedItem() == null || comboBoxS.getSelectedItem() == null){
                     JOptionPane.showMessageDialog(this,"Please enter data to add a Consultation");
                 }else{
-                    String patientName = tFirstname.getText() + " " + tSurname.getText();
-                    String doctorName = (String) comboBox.getSelectedItem();
-                    String dateOfBirth = dateOfBirthL.getText();
-                    String dateFormat = consultDateL.getText();
-                    String spec = (String) comboBoxS.getSelectedItem();
-                    String time = (String) comboBoxT.getSelectedItem();
-                    Date formatBox;
-                    Date dobBox;
+                    patientName = tFirstname.getText() + " " + tSurname.getText();
+                    doctorName = (String) comboBox.getSelectedItem();
+                    String dateOfBirth = dobPicker.getText();
+                    String dateFormat = consultDatePicker.getText();
+                    spec = (String) comboBoxS.getSelectedItem();
+                    time = (String) comboBoxT.getSelectedItem();
                     try {
                         dobBox = dateFormatter.parse(dateOfBirth);
                     } catch (ParseException ex) {
@@ -300,29 +295,28 @@ public class AddConsultations extends JFrame {
                     } catch (ParseException ex) {
                         throw new RuntimeException(ex);
                     }
-                    if(Consultations.checkAvailability(Consultations.availabilities, doctorName, formatBox, spec, time)){
-                        id = Helper.idGenerator(5);
-                        consultationId = Helper.idGenerator(8);
-                        genderSelected = getSelectedButtonText(gen);
-                        Patient patient = new Patient(tFirstname.getText(), tSurname.getText(), dobBox,
-                                tMobile.getText(), genderSelected, id, nic.getText());
-                        Patient.patients.add(patient);
-                        Consultations.availabilities.add(new Availability(doctorName,formatBox,
-                                spec, time));
-                        saveAvailableConsultations();
-                        Consultations.consultations.add(new Consultations(consultationId, patient, doctorName,
-                                jNotes.getText(), pastConsultations(patientName, nic.getText()), formatBox,
-                                (String) comboBoxT.getSelectedItem()));
-                        encrypt();
+                    if(Consultations.checkAvailability(Consultations.availabilities, doctorName, formatBox, spec,
+                            time)){
+                        addPatientConsultation(doctorName);
                         JOptionPane.showMessageDialog(this,"Consultation Added Successfully!");
-                        tFirstname.setText("");
-                        tSurname.setText("");
-                        jNotes.setText("");
-                        tMobile.setText("");
-                        dateOfBirthL.setText("");
-                        getConsultDate.setText("");
                     }else{
-                        System.out.println("Else statement");
+                        for(Doctor doc : doctors){
+                            String doctor = doc.getName() + " " + doc.getSurname();
+                            if(!doctor.equals(doctorName) && doc.getSpecialization().equals(spec)){
+                                if(Consultations.checkAvailability(Consultations.availabilities, doctor, formatBox,
+                                        spec, time)){
+                                    addPatientConsultation(doctor);
+                                    JOptionPane.showMessageDialog(this,
+                                            "Dr. " + doctorName + " is not available. Consultation is added to Dr. " + doctor);
+                                    break;
+                                }else{
+                                    JOptionPane.showMessageDialog(this, "No Doctor is available in that Date/Time " +
+                                            "slot." +
+                                            " " +
+                                            "Please select a different Time Slot/Date");
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -333,6 +327,7 @@ public class AddConsultations extends JFrame {
         setTitle("Add a Consultation");
         setSize(1200, 600);
         setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
     }
 
@@ -363,6 +358,43 @@ public class AddConsultations extends JFrame {
             }
         }catch(IOException ex){
             ex.printStackTrace();
+        }
+    }
+
+    public static void saveConsultations(){
+        try {
+            File file = new File("Consultations.txt");
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            try {
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+                for (Consultations consultations : Consultations.consultations) {
+                    objectOutputStream.writeObject(consultations);
+                }
+                objectOutputStream.close();
+                fileOutputStream.close();
+                System.out.println("Saved Successfully!");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
+    }
+
+    public static void loadConsultations() {
+        try{
+            FileInputStream fileInputStream = new FileInputStream("Consultations.txt");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            while(true){
+                try{
+                    Consultations consultation = (Consultations) objectInputStream.readObject();
+                    Consultations.consultations.add(consultation);
+                }catch(Exception e){
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -415,7 +447,7 @@ public class AddConsultations extends JFrame {
             ObjectOutputStream oos = null;
             for (Consultations con : Consultations.consultations) {
                 SealedObject sealedEm1 = new SealedObject(con, cipher);
-                FileOutputStream fos = new FileOutputStream("encryptedConsultationData.aes");
+                FileOutputStream fos = new FileOutputStream("encryptedConsultationData.aes", false);
                 CipherOutputStream cos = new CipherOutputStream(fos, cipher);
                 oos = new ObjectOutputStream(cos);
                 oos.writeObject(sealedEm1);
@@ -436,7 +468,8 @@ public class AddConsultations extends JFrame {
             Cipher cipher = Cipher.getInstance(key.getAlgorithm() + "/CBC/PKCS5Padding");
             cipher.init( Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
 
-            CipherInputStream cipherInputStream = new CipherInputStream(new BufferedInputStream(new FileInputStream("encryptedConsultationData.aes")), cipher );
+            CipherInputStream cipherInputStream = new CipherInputStream(new BufferedInputStream(new FileInputStream(
+                    "encryptedConsultationData.aes")), cipher );
             ObjectInputStream inputStream = new ObjectInputStream(cipherInputStream);
             while(true){
                 try{
@@ -454,5 +487,29 @@ public class AddConsultations extends JFrame {
         }catch(Exception ex){
             ex.printStackTrace();
         }
+    }
+
+    public void addPatientConsultation(String doctorNamePass){
+        id = Helper.idGenerator(5);
+        consultationId = Helper.idGenerator(8);
+        genderSelected = getSelectedButtonText(gen);
+        Patient patient = new Patient(tFirstname.getText(), tSurname.getText(), dobBox,
+                tMobile.getText(), genderSelected, id, nic.getText());
+        Patient.patients.add(patient);
+        Consultations.availabilities.add(new Availability(doctorNamePass,formatBox,
+                spec, time));
+        saveAvailableConsultations();
+        Consultations.consultations.add(new Consultations(consultationId, patient, doctorNamePass,
+                jNotes.getText(), pastConsultations(patientName, nic.getText()), formatBox,
+                (String) comboBoxT.getSelectedItem()));
+        encrypt();
+        saveConsultations();
+        tFirstname.setText("");
+        tSurname.setText("");
+        jNotes.setText("");
+        tMobile.setText("");
+        nic.setText("");
+        dobPicker.setText("");
+        consultDatePicker.setText("");
     }
 }
