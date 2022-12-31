@@ -8,7 +8,7 @@ public class Consultations implements Serializable {
     private String consultationId;
     private Patient patient;
     private String doctor;
-    private String notes;
+    private Notes notes;
     private double cost;
     private Date consultationDate;
     private String time;
@@ -19,7 +19,7 @@ public class Consultations implements Serializable {
     }
 
     public Consultations(String consultationId, Patient patient,
-                         String doctor, String notes, double cost, Date consultationDate, String time) {
+                         String doctor, Notes notes, double cost, Date consultationDate, String time) {
         this.consultationId = consultationId;
         this.patient = patient;
         this.notes = notes;
@@ -77,11 +77,11 @@ public class Consultations implements Serializable {
         this.doctor = doctor;
     }
 
-    public String getNotes() {
+    public Notes getNotes() {
         return notes;
     }
 
-    public void setNotes(String notes) {
+    public void setNotes(Notes notes) {
         this.notes = notes;
     }
 

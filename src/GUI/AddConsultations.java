@@ -6,6 +6,7 @@ import datechooser.model.DateChoose;
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.*;
 import java.security.SecureRandom;
@@ -20,7 +21,7 @@ public class AddConsultations extends JFrame {
     JComboBox<String> comboBoxT;
     public static File filePath;
     ButtonGroup gen;
-    String id, genderSelected, consultationId,doctorName, spec, time, patientName;
+    String id, genderSelected, consultationId,doctorName, spec, time, patientName,imageRefPath;
     JTextField dobPicker;
     JTextArea jNotes;
     JTextField consultDatePicker,tFirstname, tSurname, tMobile, nic;
@@ -249,6 +250,9 @@ public class AddConsultations extends JFrame {
         jNotes.setFont(new Font("Arial", Font.PLAIN, 15));
         jNotes.setSize(250, 100);
         jNotes.setLocation(750, 300);
+        jNotes.setLineWrap(true);
+        jNotes.setWrapStyleWord(true);
+        jNotes.setAutoscrolls(true);
         c.add(jNotes);
 
         // Book a consultation button
@@ -264,14 +268,17 @@ public class AddConsultations extends JFrame {
         upload.setLocation(1010,300);
         c.add(upload);
 
-        upload.addActionListener(e -> {
-            JFileChooser fileUpload = new JFileChooser();
-            int res = fileUpload.showOpenDialog(null);
+        JLabel success = new JLabel();
+        success.setSize(150,30);
+        success.setLocation(1010,320);
+        c.add(success);
 
-            if(res == JFileChooser.APPROVE_OPTION){
-                filePath = new File(fileUpload.getSelectedFile().getAbsoluteFile().toURI());
-                System.out.println(filePath);
-            }
+        upload.addActionListener(e -> {
+            JFrame imageUploadFrame = new JFrame("Upload Image For Consultation");
+            FileDialog imageFileDialog = new FileDialog(imageUploadFrame, "Open", FileDialog.LOAD);
+            imageFileDialog.setVisible(true);
+            imageRefPath = imageFileDialog.getDirectory() + imageFileDialog.getFile();
+            success.setText("File Uploaded");
         });
 
         try{
@@ -433,60 +440,28 @@ public class AddConsultations extends JFrame {
         return cost;
     }
 
-    public static void encrypt(){
-        try {
-            KeyGenerator kg = KeyGenerator.getInstance("AES");
-            SecretKey key = kg.generateKey();
-            SecureRandom random = new SecureRandom();
-            byte[] iv = new byte[16];
-            random.nextBytes(iv);
-
-            Cipher cipher = Cipher.getInstance(key.getAlgorithm() + "/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
-
-            ObjectOutputStream oos = null;
-            for (Consultations con : Consultations.consultations) {
-                SealedObject sealedEm1 = new SealedObject(con, cipher);
-                FileOutputStream fos = new FileOutputStream("encryptedConsultationData.aes", false);
-                CipherOutputStream cos = new CipherOutputStream(fos, cipher);
-                oos = new ObjectOutputStream(cos);
-                oos.writeObject(sealedEm1);
-            }
-            assert oos != null;
-            oos.close();
-
-        }catch(Exception exception){
-            exception.printStackTrace();
+    public static String encrypt(String notes){
+        int key = 6;
+        StringBuilder encryptedText = new StringBuilder();
+        char[] charsForEncryption = notes.toCharArray();
+        for(char c : charsForEncryption){
+            c += key;
+            encryptedText.append(c);
         }
+        System.out.println(encryptedText);
+        return encryptedText.toString();
     }
 
-    public static void decrypt(){
-        try{
-            KeyGenerator kg = KeyGenerator.getInstance("AES");
-            SecretKey key = kg.generateKey();
-            byte[] iv = new byte[16];
-            Cipher cipher = Cipher.getInstance(key.getAlgorithm() + "/CBC/PKCS5Padding");
-            cipher.init( Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
-
-            CipherInputStream cipherInputStream = new CipherInputStream(new BufferedInputStream(new FileInputStream(
-                    "encryptedConsultationData.aes")), cipher );
-            ObjectInputStream inputStream = new ObjectInputStream(cipherInputStream);
-            while(true){
-                try{
-                    SealedObject sealedObject = (SealedObject) inputStream.readObject();
-                    Consultations consultations1 = (Consultations) sealedObject.getObject(cipher);
-                    Consultations.consultations.add(consultations1);
-                    System.out.println(consultations1.getConsultationId() + " " + consultations1.getDoctor());
-                }catch(Exception ex){
-                    ex.printStackTrace();
-                    break;
-                }
-            }
-            inputStream.close();
-            System.out.println("Decryption works");
-        }catch(Exception ex){
-            ex.printStackTrace();
+    public static String decrypt(String notes){
+        int key = 6;
+        StringBuilder decryptedText = new StringBuilder();
+        char[] charsForEncryption = notes.toCharArray();
+        for(char c : charsForEncryption){
+            c -= key;
+            decryptedText.append(c);
         }
+        System.out.println(decryptedText);
+        return decryptedText.toString();
     }
 
     public void addPatientConsultation(String doctorNamePass){
@@ -499,10 +474,10 @@ public class AddConsultations extends JFrame {
         Consultations.availabilities.add(new Availability(doctorNamePass,formatBox,
                 spec, time));
         saveAvailableConsultations();
+        Notes notes = new Notes(encrypt(jNotes.getText()), imageRefPath);
         Consultations.consultations.add(new Consultations(consultationId, patient, doctorNamePass,
-                jNotes.getText(), pastConsultations(patientName, nic.getText()), formatBox,
+                notes, pastConsultations(patientName, nic.getText()), formatBox,
                 (String) comboBoxT.getSelectedItem()));
-        encrypt();
         saveConsultations();
         tFirstname.setText("");
         tSurname.setText("");

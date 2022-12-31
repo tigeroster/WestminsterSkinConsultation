@@ -1,5 +1,7 @@
 package GUI;
 
+import Console.Consultations;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
