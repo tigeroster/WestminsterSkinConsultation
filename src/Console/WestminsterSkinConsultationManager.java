@@ -11,70 +11,63 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
     public void addDoctor(ArrayList<Doctor> doctors) {
         Scanner sc = new Scanner(System.in);
         try{
-            System.out.println("Enter the doctor's Firstname: ");
-            String firstName = sc.nextLine();
-            System.out.println("Enter the doctor's Surname");
-            String surname = sc.nextLine();
-            System.out.println("Enter the doctor's Date of Birth: ");
-            String doctorDob = sc.nextLine();
+            if(Doctor.doctors.size() != 10){
+                System.out.println("Enter the doctor's Firstname: ");
+                String firstName = sc.nextLine();
+                System.out.println("Enter the doctor's Surname");
+                String surname = sc.nextLine();
+                System.out.println("Enter the doctor's Date of Birth: ");
+                String doctorDob = sc.nextLine();
 
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
-            Date dob = dateFormatter.parse(doctorDob);
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
+                Date dob = dateFormatter.parse(doctorDob);
 
-            System.out.println("Enter the doctor's Mobile Number: ");
-            String mobile = sc.nextLine();
+                System.out.println("Enter the doctor's Mobile Number: ");
+                String mobile = sc.nextLine();
 
-            System.out.println("Enter the Doctor's Gender: ");
-            String gender = sc.nextLine();
+                System.out.println("Enter the Doctor's Gender: ");
+                String gender = sc.nextLine();
 
-            String medicalNumber = Helper.idGenerator(6);
-            System.out.println("List of Specializations\n");
-            for(int i = 0; i< Doctor.specializationNames.length; i++){
-                System.out.println(i + 1 + " - " + Doctor.specializationNames[i]);
-            }
-            boolean loop = true;
-            while(loop){
-                try{
-                    System.out.println("\nEnter the Doctor's Specialization ID: ");
-                    int specializationId = sc.nextInt();
-
-                    switch (specializationId){
-                        case 1 -> {
-                            specialization = "Dermatology";
-                            loop = false;
-                        }
-                        case 2 -> {
-                            specialization = "Internal medicine";
-                            loop = false;
-                        }
-                        case 3 -> {
-                            specialization = "Neurology";
-                            loop = false;
-                        }
-                        case 4 -> {
-                            specialization = "Psychiatry";
-                            loop = false;
-                        }
-                        case 5 -> {
-                            specialization = "Surgery";
-                            loop = false;
-                        }
-                        case 6 -> {
-                            specialization = "General Practitioner";
-                            loop = false;
-                        }
-                        default -> {
-                            System.out.println("Invalid ID Number");
-                        }
-                    }
-                }catch(Exception e){
-                    e.printStackTrace();
-                    break;
+                String medicalNumber = Helper.idGenerator(6);
+                System.out.println("List of Specializations\n");
+                for(int i = 0; i< Doctor.specializationNames.length; i++){
+                    System.out.println(i + 1 + " - " + Doctor.specializationNames[i]);
                 }
+                boolean loop = true;
+                while(loop){
+                    try{
+                        System.out.println("\nEnter the Doctor's Specialization ID: ");
+                        int specializationId = sc.nextInt();
+
+                        switch (specializationId){
+                            case 1 -> {
+                                specialization = "Cosmetic Dermatology";
+                                loop = false;
+                            }
+                            case 2 -> {
+                                specialization = "Medical Dermatology";
+                                loop = false;
+                            }
+                            case 3 -> {
+                                specialization = "Paediatric Dermatology";
+                                loop = false;
+                            }
+                            default -> {
+                                System.out.println("Invalid ID Number");
+                            }
+                        }
+                    }catch(Exception e){
+                        e.printStackTrace();
+                        break;
+                    }
+                }
+                Doctor doctor = new Doctor(firstName, surname, dob, mobile, medicalNumber, specialization, gender);
+                doctors.add(doctor);
+                System.out.println("Doctor " + doctor.getName() + " " + doctor.getSurname() + " is added successfully!\n");
+            }else{
+                System.out.println("Cannot add more Doctors\nMemory Full");
             }
-            Doctor doctor = new Doctor(firstName, surname, dob, mobile, medicalNumber, specialization, gender);
-            doctors.add(doctor);
-            System.out.println("Doctor " + doctor.getName() + " " + doctor.getSurname() + " is added successfully!\n");
+
         }catch (ParseException parseException){
             System.out.println("Something is wrong. Please check the inputs you entered");
         }catch(ArrayIndexOutOfBoundsException outOfBoundsException){
@@ -85,17 +78,19 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
     @Override
     public void viewDoctors(ArrayList<Doctor> doctors) {
         if(doctors.size() != 0){
-            System.out.println("List of all the doctors\n");
+            System.out.println("""
+                    =========================================
+                    |       List of all the Doctors         |
+                    =========================================""");
             doctors.sort(Comparator.comparing(Person::getSurname));
             for (Doctor doctor : doctors) {
-                System.out.println("======================================");
-                System.out.println("======================================");
-                System.out.println("Medical License Number: " + doctor.getMedicalLicenseNo());
-                System.out.println("Doctor's Name: " + doctor.getName() + " " + doctor.getSurname());
-                System.out.println("Date Of Birth: " + String.format("%1$tb %1$te, %1$tY", doctor.getDateOfBirth()));
-                System.out.println("Gender: " +doctor.getGender());
-                System.out.println("Doctor's Specialization: " + doctor.getSpecialization());
-                System.out.println("Doctor's Mobile Number: " + doctor.getMobileNumber());
+                System.out.println("Medical License Number       : " + doctor.getMedicalLicenseNo());
+                System.out.println("Doctor's Name                : " + doctor.getName() + " " + doctor.getSurname());
+                System.out.println("Date Of Birth                : " + String.format("%1$tb %1$te, %1$tY",
+                        doctor.getDateOfBirth()));
+                System.out.println("Gender                       : " +doctor.getGender());
+                System.out.println("Doctor's Specialization      : " + doctor.getSpecialization());
+                System.out.println("Doctor's Mobile Number       : " + doctor.getMobileNumber());
                 System.out.println("=======================================");
                 System.out.println("=======================================");
             }
@@ -164,38 +159,4 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
             throw new RuntimeException(e);
         }
     }
-
-    @Override
-    public void findDoctorDetails(ArrayList<Doctor> doctors){
-        Scanner sc = new Scanner(System.in);
-        for(Doctor doctor:  doctors){
-            System.out.println("Medical License Number: " + doctor.getMedicalLicenseNo());
-            System.out.println("Doctor's Name: " + doctor.getName());
-            System.out.println("=======================================");
-        }
-        try{
-            System.out.println("Enter the Doctor's Medical License Number: ");
-            String number = sc.nextLine();
-            for(Doctor doctor: doctors){
-                if(number.equals(doctor.getMedicalLicenseNo())){
-                    System.out.println("======================================");
-                    System.out.println("======================================");
-                    System.out.println("Medical License Number: " + doctor.getMedicalLicenseNo());
-                    System.out.println("Doctor's Name: " + doctor.getName() + " " + doctor.getSurname());
-                    System.out.println("Date Of Birth: " + String.format("%1$tb %1$te, %1$tY", doctor.getDateOfBirth()));
-                    System.out.println("Gender: " + doctor.getGender());
-                    System.out.println("Doctor's Specialization: " + doctor.getSpecialization());
-                    System.out.println("Doctor's Mobile Number: " + doctor.getMobileNumber());
-                    System.out.println("=======================================");
-                    System.out.println("=======================================");
-                }else{
-                    System.out.println("No doctors to be found");
-                }
-            }
-        }catch(Exception exception){
-            System.out.println("Something is wrong. Please try again!");
-        }
-
-    }
-
 }

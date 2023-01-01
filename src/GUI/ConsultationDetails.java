@@ -4,7 +4,7 @@ import Console.Consultations;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
+import java.text.ParseException;
 import java.util.Objects;
 
 public class ConsultationDetails extends JFrame {
@@ -96,6 +96,19 @@ public class ConsultationDetails extends JFrame {
         genderT.setLocation(200,300);
         add(genderT);
 
+        JLabel nicL = new JLabel("Patient NIC");
+        nicL.setFont(new Font("Arial", Font.BOLD, 16));
+        nicL.setSize(500,30);
+        nicL.setLocation(50,350);
+        add(nicL);
+
+        JLabel nic = new JLabel("Patient NIC");
+        nic.setText(getNic(conId));
+        nic.setFont(new Font("Arial", Font.PLAIN, 16));
+        nic.setSize(500,30);
+        nic.setLocation(200,350);
+        add(nic);
+
         JLabel conIdL = new JLabel("Consultation ID");
         conIdL.setFont(new Font("Arial", Font.BOLD, 16));
         conIdL.setSize(500,30);
@@ -172,7 +185,6 @@ public class ConsultationDetails extends JFrame {
         photo.setLocation(800,100);
         add(photo);
 
-
         JLabel notes = new JLabel("Notes");
         notes.setFont(new Font("Arial", Font.BOLD, 16));
         notes.setSize(100,30);
@@ -202,13 +214,24 @@ public class ConsultationDetails extends JFrame {
         JButton editButton = new JButton("Edit");
         editButton.setFocusPainted(false);
         editButton.setSize(100,30);
-        editButton.setLocation(50,350);
+        editButton.setLocation(50,400);
         add(editButton);
+        editButton.addActionListener(e -> {
+            dispose();
+            String[] fullName = name.split(" ");
+            String first = fullName[0];
+            String last = fullName[1];
+            try {
+                new EditConsultations(pId, first, last, Gender, mob, dob, nic.getText());
+            } catch (ParseException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         JButton deleteButton = new JButton("Delete");
         deleteButton.setFocusPainted(false);
         deleteButton.setSize(100,30);
-        deleteButton.setLocation(150,350);
+        deleteButton.setLocation(150,400);
         add(deleteButton);
         deleteButton.addActionListener(e-> {
             String[] options = {"Yes", "No"};
@@ -223,6 +246,8 @@ public class ConsultationDetails extends JFrame {
                         break;
                     }
                 }
+                AddConsultations.saveConsultations();
+                AddConsultations.saveAvailableConsultations();
                 dispose();
                 new ViewConsultations();
             }
@@ -255,5 +280,15 @@ public class ConsultationDetails extends JFrame {
             }
         }
         return file;
+    }
+
+    public String getNic(String id){
+        String nic = "";
+        for(Consultations con : Consultations.consultations){
+            if(con.getConsultationId().equals(id)){
+                nic = con.getPatient().getNic();
+            }
+        }
+        return nic;
     }
 }

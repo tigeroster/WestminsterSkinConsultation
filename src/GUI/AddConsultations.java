@@ -1,15 +1,10 @@
 package GUI;
 
 import Console.*;
-import datechooser.model.DateChoose;
 
-import javax.crypto.*;
-import javax.crypto.spec.IvParameterSpec;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.*;
-import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -19,7 +14,6 @@ public class AddConsultations extends JFrame {
     JComboBox<Object> comboBox = new JComboBox<>();
     JComboBox<Object> comboBoxS = new JComboBox<>();
     JComboBox<String> comboBoxT;
-    public static File filePath;
     ButtonGroup gen;
     String id, genderSelected, consultationId,doctorName, spec, time, patientName,imageRefPath;
     JTextField dobPicker;
@@ -48,6 +42,7 @@ public class AddConsultations extends JFrame {
 
         // Home button
         ImageIcon homeIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("home1.png")));
+        ImageIcon calendar = new ImageIcon(Objects.requireNonNull(getClass().getResource("calendar.png")));
         JButton home = new JButton(homeIcon);
         home.setSize(30,30);
         home.setFocusPainted(false);
@@ -128,12 +123,13 @@ public class AddConsultations extends JFrame {
 
         dobPicker = new JTextField();
         dobPicker.setFont(new Font("Arial", Font.PLAIN, 15));
-        dobPicker.setSize(100, 30);
+        dobPicker.setSize(150, 30);
         dobPicker.setLocation(250, 250);
         JButton dobButton = new JButton();
+        dobButton.setIcon(calendar);
         dobButton.setFocusPainted(false);
         dobButton.setSize(50,30);
-        dobButton.setLocation(350,250);
+        dobButton.setLocation(400,250);
         dobButton.addActionListener(e-> {
             dobPicker.setText(new DatePicker(this).setPickedDate());
         });
@@ -196,7 +192,7 @@ public class AddConsultations extends JFrame {
             comboBox.removeAllItems();
             for (Doctor doctor : doctors) {
                 if(doctor.getSpecialization().equals(comboBoxS.getSelectedItem())){
-                    comboBoxModel.addElement(doctor.getName() + " " + doctor.getSurname());
+                    comboBoxModel.addElement("Dr. " + doctor.getName() + " " + doctor.getSurname());
                 }
             }
         });
@@ -216,11 +212,12 @@ public class AddConsultations extends JFrame {
 
         consultDatePicker = new JTextField();
         consultDatePicker.setFont(new Font("Arial", Font.PLAIN, 15));
-        consultDatePicker.setSize(100, 30);
+        consultDatePicker.setSize(150, 30);
         consultDatePicker.setLocation(750, 200);
         JButton consultDateButton = new JButton();
+        consultDateButton.setIcon(calendar);
         consultDateButton.setSize(50,30);
-        consultDateButton.setLocation(850,200);
+        consultDateButton.setLocation(900,200);
         c.add(consultDateButton);
         consultDateButton.addActionListener(e-> {
             consultDatePicker.setText(new DatePicker(this).setPickedDate());
@@ -278,7 +275,11 @@ public class AddConsultations extends JFrame {
             FileDialog imageFileDialog = new FileDialog(imageUploadFrame, "Open", FileDialog.LOAD);
             imageFileDialog.setVisible(true);
             imageRefPath = imageFileDialog.getDirectory() + imageFileDialog.getFile();
-            success.setText("File Uploaded");
+            if(!imageRefPath.equals("")){
+                success.setText("File Uploaded");
+            }else{
+                success.setText("No File Selected");
+            }
         });
 
         try{
@@ -287,7 +288,9 @@ public class AddConsultations extends JFrame {
                     JOptionPane.showMessageDialog(this,"Please enter data to add a Consultation");
                 }else{
                     patientName = tFirstname.getText() + " " + tSurname.getText();
-                    doctorName = (String) comboBox.getSelectedItem();
+                    String doctorNameC = (String) comboBox.getSelectedItem();
+                    doctorName = doctorNameC.replace("Dr. ", "");
+                    System.out.println(doctorName);
                     String dateOfBirth = dobPicker.getText();
                     String dateFormat = consultDatePicker.getText();
                     spec = (String) comboBoxS.getSelectedItem();
@@ -338,7 +341,7 @@ public class AddConsultations extends JFrame {
         setResizable(false);
     }
 
-    public String getSelectedButtonText(ButtonGroup buttonGroup) {
+    public static String getSelectedButtonText(ButtonGroup buttonGroup) {
         for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
             AbstractButton button = buttons.nextElement();
             if (button.isSelected()) {

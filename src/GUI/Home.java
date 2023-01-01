@@ -31,8 +31,8 @@ public class Home extends JFrame{
             addConsultations.addActionListener(e -> {
                 if(e.getSource() == addConsultations){
                     frame.dispose();
-//                    AddConsultations.loadAvailableConsultations();
-//                    AddConsultations.loadConsultations();
+                    AddConsultations.loadAvailableConsultations();
+                    AddConsultations.loadConsultations();
                     new AddConsultations();
                 }
             });

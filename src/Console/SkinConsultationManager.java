@@ -9,5 +9,4 @@ public interface SkinConsultationManager {
     void deleteDoctor(ArrayList<Doctor> doctors);
     void saveData(ArrayList<Doctor> doctors);
     void loadData(ArrayList<Doctor> doctors) throws IOException;
-    void findDoctorDetails(ArrayList<Doctor> doctors);
 }
