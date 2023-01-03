@@ -8,7 +8,7 @@ import java.util.*;
 public class WestminsterSkinConsultationManager implements SkinConsultationManager{
     public String specialization = "";
     @Override
-    public void addDoctor(ArrayList<Doctor> doctors) {
+    public void addDoctor(ArrayList<Doctor> doctors, Scanner scanner) {
         Scanner sc = new Scanner(System.in);
         try{
             if(Doctor.doctors.size() != 10){
@@ -63,7 +63,7 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
                 }
                 Doctor doctor = new Doctor(firstName, surname, dob, mobile, medicalNumber, specialization, gender);
                 doctors.add(doctor);
-                System.out.println("Doctor " + doctor.getName() + " " + doctor.getSurname() + " is added successfully!\n");
+                System.out.println("Doctor added successfully!\n");
             }else{
                 System.out.println("Cannot add more Doctors\nMemory Full");
             }
@@ -100,7 +100,7 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
     }
 
     @Override
-    public void deleteDoctor(ArrayList<Doctor> doctors) {
+    public void deleteDoctor(ArrayList<Doctor> doctors, Scanner scanner) {
         Scanner sc = new Scanner(System.in);
         viewDoctors(doctors);
         if(doctors.size() != 0){
@@ -143,14 +143,14 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
     }
 
     @Override
-    public void loadData(ArrayList<Doctor> doctors) {
+    public void loadData() {
         try{
             FileInputStream fileInputStream = new FileInputStream("doctorData.txt");
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             while(true){
                 try{
                     Doctor doctor = (Doctor) objectInputStream.readObject();
-                    doctors.add(doctor);
+                    Doctor.doctors.add(doctor);
                 }catch(Exception e){
                     break;
                 }

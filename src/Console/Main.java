@@ -13,7 +13,7 @@ public class Main{
     public static Scanner sc = new Scanner(System.in);
     public static void main(String[] args){
         WestminsterSkinConsultationManager manager = new WestminsterSkinConsultationManager();
-        manager.loadData(Doctor.doctors);
+        manager.loadData();
 
         System.out.println("""
                               =======================================================
@@ -61,8 +61,8 @@ public class Main{
                               =======================================================""");
                             int option = sc.nextInt();
                             switch (option) {
-                                case 1 -> manager.addDoctor(Doctor.doctors);
-                                case 2 -> manager.deleteDoctor(Doctor.doctors);
+                                case 1 -> manager.addDoctor(Doctor.doctors, sc);
+                                case 2 -> manager.deleteDoctor(Doctor.doctors,sc);
                                 case 3 -> manager.viewDoctors(Doctor.doctors);
                                 case 4 -> manager.saveData(Doctor.doctors);
                                 case 5 -> System.exit(0);
