@@ -8,8 +8,7 @@ import java.util.*;
 public class WestminsterSkinConsultationManager implements SkinConsultationManager{
     public String specialization = "";
     @Override
-    public void addDoctor(ArrayList<Doctor> doctors, Scanner scanner) {
-        Scanner sc = new Scanner(System.in);
+    public void addDoctor(ArrayList<Doctor> doctors, Scanner sc) throws ParseException {
         try{
             if(Doctor.doctors.size() != 10){
                 System.out.println("Enter the doctor's Firstname: ");
@@ -37,18 +36,18 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
                 while(loop){
                     try{
                         System.out.println("\nEnter the Doctor's Specialization ID: ");
-                        int specializationId = sc.nextInt();
+                        String specializationId = sc.next();
 
                         switch (specializationId){
-                            case 1 -> {
+                            case "1" -> {
                                 specialization = "Cosmetic Dermatology";
                                 loop = false;
                             }
-                            case 2 -> {
+                            case "2" -> {
                                 specialization = "Medical Dermatology";
                                 loop = false;
                             }
-                            case 3 -> {
+                            case "3" -> {
                                 specialization = "Paediatric Dermatology";
                                 loop = false;
                             }
@@ -70,6 +69,7 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
 
         }catch (ParseException parseException){
             System.out.println("Something is wrong. Please check the inputs you entered");
+            throw new ParseException(parseException.getMessage(), parseException.getErrorOffset());
         }catch(ArrayIndexOutOfBoundsException outOfBoundsException){
             System.out.println();
         }
@@ -100,8 +100,7 @@ public class WestminsterSkinConsultationManager implements SkinConsultationManag
     }
 
     @Override
-    public void deleteDoctor(ArrayList<Doctor> doctors, Scanner scanner) {
-        Scanner sc = new Scanner(System.in);
+    public void deleteDoctor(ArrayList<Doctor> doctors, Scanner sc) {
         viewDoctors(doctors);
         if(doctors.size() != 0){
             System.out.println("Enter the medical license number:");

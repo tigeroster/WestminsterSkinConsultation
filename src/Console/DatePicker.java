@@ -1,7 +1,5 @@
 package Console;
 
-import datechooser.model.DateChoose;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

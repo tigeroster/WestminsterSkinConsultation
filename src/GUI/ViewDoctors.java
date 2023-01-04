@@ -14,13 +14,11 @@ public class ViewDoctors extends JFrame {
         table.getTableHeader().setBackground(Color.yellow);
         table.setAutoCreateRowSorter(true);
         scroll = new JScrollPane(table);
-        scroll = new JScrollPane(table);
         scroll.setSize(1200, 500);
         scroll.setLocation(0,100);
         add(scroll, BorderLayout.CENTER);
 
         // Back Button
-
         ImageIcon backButton = new ImageIcon(Objects.requireNonNull(getClass().getResource("home1.png")));
         JButton back = new JButton(backButton);
         back.setFocusPainted(false);

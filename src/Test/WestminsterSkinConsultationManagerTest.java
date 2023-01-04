@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.text.ParseException;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +19,6 @@ public class WestminsterSkinConsultationManagerTest {
     private final PrintStream printStream = System.out;
     private final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     WestminsterSkinConsultationManager manager = new WestminsterSkinConsultationManager();
-
 
     @BeforeEach
     void setUp(){
@@ -31,16 +31,9 @@ public class WestminsterSkinConsultationManagerTest {
     }
 
     @Test
-    @Order(1)
-    public void loadDoctorDetails() {
-        manager.loadData();
-        assertEquals("", byteArrayOutputStream.toString().trim());
-    }
-
-    @Test
-    @Order(2)
     public void viewAllTheDetailsOfTheDoctors(){
         manager.loadData();
+        assertTrue(Doctor.doctors.size() > 0);
         manager.viewDoctors(Doctor.doctors);
         assertEquals("""
                 =========================================
@@ -125,28 +118,52 @@ public class WestminsterSkinConsultationManagerTest {
                 Doctor's Specialization      : Cosmetic Dermatology
                 Doctor's Mobile Number       : 0763798389
                 =======================================
-                =======================================""", byteArrayOutputStream.toString().trim());
+                =======================================""", byteArrayOutputStream.toString());
     }
-
-//    @Test
-//    @Order(2)
-//    public void addDoctors(){
-//        String input = "Kevin\nPeterson\n02/03/1998\n0778923892\nMale\n1";
-//        byte[] bytes = input.getBytes();
-//        InputStream inputStream = new ByteArrayInputStream(bytes);
-//        manager.addDoctor(Doctor.doctors, new Scanner(inputStream));
-//        assertEquals(1, Doctor.doctors.size());
-//    }
 
     @Test
-    @Order(3)
-    public void deleteADoctor(){
-        String input = "93bF9t";
+    public void addADoctor() throws ParseException {
+        String input = "Kevin\nPeterson\n02/12/1990\n0778938989\nMale\n1";
         byte[] bytes = input.getBytes();
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-        manager.loadData();
-        manager.deleteDoctor(Doctor.doctors, new Scanner(inputStream));
-        assertEquals("Doctor deleted successfully!", byteArrayOutputStream.toString().trim());
+        InputStream inputStream = new ByteArrayInputStream(bytes);
+        Scanner scanner = new Scanner(inputStream);
+        manager.addDoctor(Doctor.doctors, scanner);
+        assertEquals(1, Doctor.doctors.size());
     }
 
+    @Test
+    public void deleteADoctor() throws ParseException {
+        addADoctor();
+        String doctorId = "";
+        for(Doctor doctor: Doctor.doctors){
+            doctorId = doctor.getMedicalLicenseNo();
+        }
+        byte[] bytes = doctorId.getBytes();
+        InputStream inputStream = new ByteArrayInputStream(bytes);
+        Scanner scanner = new Scanner(inputStream);
+        manager.deleteDoctor(Doctor.doctors, scanner);
+        assertEquals(0, Doctor.doctors.size());
+    }
+
+    @Test
+    public void addDoctorThrowsParseException(){
+        String input = "Kevin\nPeterson\ndate\n0778938989\nMale\n1";
+        byte[] bytes = input.getBytes();
+        InputStream inputStream = new ByteArrayInputStream(bytes);
+        Scanner scanner = new Scanner(inputStream);
+        assertThrows(ParseException.class, () ->{
+            manager.addDoctor(Doctor.doctors, scanner);
+        });
+    }
+
+    @Test
+    public void addDoctorThrowsArrayIndexOutOfBoundsException() throws ParseException {
+        manager.loadData();
+        String input = "Kevin\nPeterson\ndate\n0778938989\nMale\n1";
+        byte[] bytes = input.getBytes();
+        InputStream inputStream = new ByteArrayInputStream(bytes);
+        Scanner scanner = new Scanner(inputStream);
+        manager.addDoctor(Doctor.doctors, scanner);
+        assertNotEquals(11, Doctor.doctors.size());
+    }
 }
